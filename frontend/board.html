@@ -3,9 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>CTF board</title>
-
+    <link rel="stylesheet" href="css/board.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 </head>
 <body>
-    Nothing here
+<div id="mainWrapper">
+    <div id="container">
+        <div class="bar">
+            <span class="option current">Main</span>
+            <span class="option">
+                    Tasks
+                </span>
+            <span class="option">
+                    Scoreboard
+                </span>
+            <span class="option">
+                    Settings
+                </span>
+        </div>
+        <div class="stats">
+            <h2>User overview</h2>
+            <div class="block">
+                <div id="userInfo" class="infoInBlocks">
+                    <div class="profilePhoto">
+                    </div>
+                    Name <span class="valueInfo" id="username"></span><br>
+                    Command <span class="valueInfo" id="command"></span>
+                </div>
+                <div id="userStats" class="infoInBlocks">
+                    <div class="statsElements">Overall place<span class="valueInfo">1</span></div>
+                    <div class="statsElements">Tasks submitted<span class="valueInfo">12</span></div>
+                    <div class="statsElements">Bruteforcer factor<span class="valueInfo">65%</span></div>
+                    <div class="statsElements">Best in<span class="valueInfo">WEB</span></div>
+                    <div class="statsElements">Captain of<span class="valueInfo">admins</span></div>
+                </div>
+            </div>
+            <h2>Platform overview</h2>
+            <div class="block">
+                <h3>Board stat</h3>
+                <div class="statsElements">Commands count<span class="valueInfo">100</span></div>
+                <div class="statsElements">Users<span class="valueInfo">1237</span></div>
+                <div class="statsElements">Top-1 user<span class="valueInfo">admin</span></div>
+                <div class="statsElements">Top-1 command<span class="valueInfo">spbctf</span></div>
+
+                <h3>Tasks stat count</h3>
+                <div class="statsElements">All<span class="valueInfo">22</span></div>
+                <div class="statsElements">Reverse<span class="valueInfo">2</span></div>
+                <div class="statsElements">Web<span class="valueInfo">12</span></div>
+                <div class="statsElements">Stegano<span class="valueInfo">8</span></div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/apiworker.js"></script>
 </body>
 </html>

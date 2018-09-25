@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Inconsolata');
 
 body {
-    background-color: #282828;
-    color: #ffb000;
+    background-color: #1C1F2B;
+    color: white;
     font-family: 'Inconsolata', monospace;
     text-align: center;
 }
@@ -11,11 +11,11 @@ body {
     font-size: 18px;
 
     background-color: transparent;
-    color: #ffb000;
+    color: #fff;
     border-top: none;
     border-left: none;
     border-right: none;
-    border-bottom:  2px solid #ffb000;
+    border-bottom:  2px solid #2196f3;
 }
 
 h3 {
@@ -24,14 +24,14 @@ h3 {
 
 .submitButton {
     background-color: transparent;
-    color: #ffb000;
+    color: #fff;
     padding: 10px;
-    border:  2px solid #ffb000;
+    border:  2px solid #2196f3;
     width: 50px;
 }
 
 .submitButton:hover {
-    background-color: #ffb000;
+    background-color: #2196f3;
     color:#282828;
     cursor: pointer;
 }

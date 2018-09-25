@@ -1,6 +1,8 @@
 package main
 
 import (
+	"ctfEngine/backend/common"
+	"ctfEngine/backend/userapi"
 	"database/sql"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -48,6 +50,7 @@ func main() {
 	e := echo.New()
 
 	e.Static("/css", "C:/users/kerby/go/src/ctfengine/frontend/css")
+	e.Static("/js", "C:/users/kerby/go/src/ctfengine/frontend/js")
 
 	// Middleware
 	//e.Use(middleware.Logger())
@@ -59,29 +62,29 @@ func main() {
 	}))
 
 	/*
-	API methods
+		API methods
 	*/
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
 	e.POST("/api/auth/register", register) // Register user & Create JWT
 
 	/*
-	End API methods
+		End API methods
 	*/
 
 	/*
-	Page routing
+		Page routing
 	*/
 	// Pages without checking user auth
 
-	e.GET("/", landing) // Default page with landing
+	e.GET("/", landing)        // Default page with landing
 	e.GET("/login", loginpage) // Login/Register page
 
 	// Restricted group, need to get JWT
 
 	// JWT config
 	config := middleware.JWTConfig{
-		Claims:      &jwtCustomClaims{},
+		Claims:      &common.JwtCustomClaims{},
 		SigningKey:  secretJWTkey,
 		TokenLookup: "cookie:token",
 	}
@@ -89,6 +92,11 @@ func main() {
 	r := e.Group("/board")
 	r.Use(middleware.JWTWithConfig(config))
 	r.GET("", board) // Dashboard with stats
+	//r.GET("/top", )
+
+	api := e.Group("/api/users")
+	api.Use(middleware.JWTWithConfig(config))
+	api.GET("/info", userapi.UserInfo) // Dashboard with stats
 	//r.GET("/top", )
 
 	e.Logger.Fatal(e.Start(":80"))
