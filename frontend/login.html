@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CTF login</title>
+
+    <link rel="stylesheet" href="css/login.css">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+<body>
+<img src="https://davidederosa.com/s/f/bitcoin/bitcoin-150.png" height="150" width="auto"><br>
+<h2>Custom CTF board</h2>
+<h3 id="signinTitle">Sign in</h3>
+<form>
+    <input type="text" id="inputLoginData" placeholder="username:password" class="inputLogin" size="50" style="text-align:center;" ><p>
+    <span class="submitButton" id="clickToLogin">
+        Submit
+    </span>
+</form>
+<h3>Sign up</h3>
+<form>
+    <input type="text" id="regLogin" placeholder="username" class="inputLogin" size="50" style="text-align:center;" ><p>
+    <input type="password" id="regPassword" placeholder="password" class="inputLogin" size="50" style="text-align:center;" ><p>
+    <span class="submitButton">
+        Submit
+    </span>
+</form>
+</body>
+
+<script>
+    var inputData = document.getElementById("inputLoginData");
+
+    inputData.oninput = function () {
+        let contestTitle = document.getElementById("signinTitle");
+
+        if(!this.value.includes(":"))
+            inputData.type = "text";
+        else{
+            inputData.type = "password";
+
+            if(this.value.split(":").length > 2){
+                //console.log("Слишком много :");
+                inputData.style.color = "red";
+                inputData.style.borderBottom = "2px solid red";
+                contestTitle.style.color = "red";
+            } else {
+                inputData.style.color = "#ffb000";
+                inputData.style.borderBottom = "2px solid #ffb000";
+                contestTitle.style.color = "#ffb000";
+            }
+        }
+    };
+
+    var loginClick = document.getElementById("clickToLogin");
+    loginClick.onclick = function () {
+        let credentials = document.getElementById("inputLoginData").value.split(":");
+
+        if(credentials.length > 2)
+          return;
+        else if(credentials.length <= 1)
+          return;
+
+        let username = credentials[0];
+        let password = credentials[1];
+
+        $.post({
+            type: 'post',
+            url: 'http://localhost:1323/login',
+            contentType:"application/x-www-form-urlencoded; charset=utf-8",
+            dataType:"json",
+            data:{username:username, password:password},
+            success: function(data) {
+                localStorage.setItem("jwtToken", data.token);
+                location.replace("index.html");
+            },
+            complete: function(xhr) {
+                if(xhr.status===401)
+                    console.log("unauthorised")
+            }
+        });
+    };
+
+</script>
+
+</html>
