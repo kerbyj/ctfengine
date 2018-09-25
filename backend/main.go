@@ -1,50 +1,30 @@
 package main
 
 import (
-	"net/http"
-	"time"
-
+	"database/sql"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	_ "github.com/mattn/go-sqlite3"
+	"log"
+	"net/http"
 )
 
-// jwtCustomClaims are custom claims extending default ones.
-type jwtCustomClaims struct {
-	Name  string `json:"name"`
-	Admin bool   `json:"admin"`
-	jwt.StandardClaims
+var (
+	database *sql.DB
+)
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
-func login(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-
-	if username == "jon" && password == "sh" {
-
-		// Set custom claims
-		claims := &jwtCustomClaims{
-			"Jon Snow",
-			true,
-			jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-			},
-		}
-
-		// Create token with claims
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-		// Generate encoded token and send it as response.
-		t, err := token.SignedString([]byte("secret"))
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, echo.Map{
-			"token": t,
-		})
-	}
-
-	return echo.ErrUnauthorized
+func loadDB() {
+	db, err := sql.Open("sqlite3", "db2.sqlite")
+	checkErr(err)
+	database = db
+	log.Println("Database start")
 }
 
 func accessible(c echo.Context) error {
@@ -59,19 +39,26 @@ func restricted(c echo.Context) error {
 }
 
 func main() {
+	loadDB() // Load db
+
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	//e.Use(middleware.Logger())
+	//e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+		AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
+		AllowMethods: []string{echo.GET, echo.POST},
 	}))
+
+
 
 	// Login route
 	e.POST("/login", login)
+
+	// register root
+	e.POST("/register", register)
 
 	// Unauthenticated route
 	e.GET("/", accessible)
@@ -82,10 +69,10 @@ func main() {
 	// Configure middleware with the custom claims type
 	config := middleware.JWTConfig{
 		Claims:     &jwtCustomClaims{},
-		SigningKey: []byte("secret"),
+		SigningKey: secretJWTkey,
 	}
 	r.Use(middleware.JWTWithConfig(config))
 	r.GET("", restricted)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":80"))
 }
