@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"log"
@@ -51,7 +50,6 @@ func login(c echo.Context) error {
 
 	hasher := md5.New()
 	hasher.Write([]byte(salt + password))
-	fmt.Println(hex.EncodeToString(hasher.Sum(nil)))
 
 	if passwordhash == hex.EncodeToString(hasher.Sum(nil)) {
 		// Set custom claims
@@ -71,9 +69,10 @@ func login(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return c.JSON(http.StatusOK, echo.Map{
-			"token": t,
-		})
+
+		c.SetCookie(createCookie("token", t, true, "/"))
+
+		return c.JSON(http.StatusOK, "ok")
 	}
 
 	return echo.ErrUnauthorized
@@ -132,7 +131,8 @@ func register(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": t,
-	})
+
+	c.SetCookie(createCookie("token", t, true, "/"))
+
+	return c.JSON(http.StatusOK, "ok")
 }

@@ -5,6 +5,7 @@
     <title>CTF login</title>
 
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/common.css">
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 </head>
@@ -12,8 +13,8 @@
 <img src="https://davidederosa.com/s/f/bitcoin/bitcoin-150.png" height="150" width="auto"><br>
 <h2>Custom CTF board</h2>
 <h3 id="signinTitle">Sign in</h3>
-<form>
-    <input type="text" id="inputLoginData" placeholder="username:password" class="inputLogin" size="50" style="text-align:center;" ><p>
+<form id="loginForm">
+    <input type="text" id="inputLoginData" placeholder="username:password" class="inputLogin" size="50" style="text-align:center;" autocomplete="off"><p>
     <span class="submitButton" id="clickToLogin">
         Submit
     </span>
@@ -53,6 +54,14 @@
         }
     };
 
+    $('#loginForm').on('keyup keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
     var loginClick = document.getElementById("clickToLogin");
     loginClick.onclick = function () {
         let credentials = document.getElementById("inputLoginData").value.split(":");
@@ -67,13 +76,14 @@
 
         $.post({
             type: 'post',
-            url: 'http://localhost/login',
+            url: 'http://localhost/api/auth/login',
             contentType:"application/x-www-form-urlencoded; charset=utf-8",
             dataType:"json",
             data:{username:username, password:password},
             success: function(data) {
-                localStorage.setItem("jwtToken", data.token);
-                location.replace("index.html");
+                //localStorage.setItem("jwtToken", data.token);
+                //document.cookie = "token="+data.token;
+                location.replace("board");
             },
             complete: function(xhr) {
                 if(xhr.status===401)
@@ -91,14 +101,14 @@
 
         $.post({
             type: 'post',
-            url: 'http://localhost/register',
+            url: 'http://localhost/api/auth/register',
             contentType:"application/x-www-form-urlencoded; charset=utf-8",
             dataType:"json",
             data:{username:username, password:password, email:email},
             success: function(data) {
-                localStorage.setItem("jwtToken", data.token);
-                console.log("Created user")
-                //location.replace("index.html");
+                //localStorage.setItem("jwtToken", data.token);
+                console.log("Created user");
+                location.replace("board");
             },
             complete: function(xhr) {
                 if(xhr.status===401)
