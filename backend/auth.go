@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"ctfEngine/backend/common"
+	"ctfEngine/backend/database"
 	"encoding/hex"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
@@ -19,31 +20,17 @@ const (
 	salt = ""
 )
 
-// jwtCustomClaims are custom claims extending default ones.
-type jwtCustomClaims struct {
-	Name   string `json:"name"`
-	Admin  int    `json:"admin"`
-	UserId int    `json:"id"`
-	jwt.StandardClaims
-}
-
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
-	rows, err := database.Query("SELECT COUNT(*), id, password, status FROM users WHERE username==?", username)
-
-	if err != nil {
-		log.Println(err)
-	}
+	rows := database.DB.QueryRow("SELECT COUNT(*), id, password, status FROM users WHERE username=?", username)
 
 	var count, id int
 	var passwordhash string
 	var status int
 
-	rows.Next()
-	rows.Scan(&id, &count, &passwordhash, &status)
-	rows.Close()
+	rows.Scan(&count, &id, &passwordhash, &status)
 
 	if count == 0 {
 		return echo.ErrUnauthorized
@@ -85,16 +72,11 @@ func register(c echo.Context) error {
 	password := c.FormValue("password")
 	email := c.FormValue("email")
 
-	rows, err := database.Query("SELECT(SELECT COUNT(*) FROM users WHERE username==?),(SELECT COUNT(*) FROM users WHERE email==?)", username, email)
-
-	if err != nil {
-		log.Println(err, "ErrCountQuery")
-	}
+	rows := database.DB.QueryRow("SELECT(SELECT COUNT(*) FROM users WHERE username==?),(SELECT COUNT(*) FROM users WHERE email=?)", username, email)
 
 	var countByUsers, countByEmails int
-	rows.Next()
+
 	rows.Scan(&countByUsers, &countByEmails)
-	rows.Close()
 
 	if countByUsers+countByEmails != 0 {
 		log.Println("Counts not null")
@@ -103,8 +85,8 @@ func register(c echo.Context) error {
 	hasher := md5.New()
 	hasher.Write([]byte(salt + password))
 	var passwordHash = hex.EncodeToString(hasher.Sum(nil))
-	stmt, err := database.Prepare("INSERT INTO users(username, password, email) values(?,?,?)")
-	checkErr(err)
+	stmt, err := database.DB.Prepare("INSERT INTO users(username, password, email) values(?,?,?)")
+
 	res, errExecInsert := stmt.Exec(username, passwordHash, email)
 	stmt.Close()
 	if errExecInsert != nil {

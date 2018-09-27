@@ -31,7 +31,7 @@ body {
 }
 
 .stats {
-    margin-top: 100px;
+    margin-top: 50px;
     margin-left: auto;
     margin-right: auto;
     width: 60%;
@@ -40,7 +40,7 @@ body {
 .block {
     width: 100%;
     background-color: rgba(0,0,0,0.15);
-    margin: 10px;
+    margin: 10px 10px 10px 0px;
     padding: 15px;
     display: table;
     font-size: 1.1em;
@@ -90,7 +90,7 @@ body {
 
 .valueInfo {
     color: #2196f3;
-    font-size: 1.2em;
+    font-size: 1.0em;
 }
 
 .valueInfo::before {

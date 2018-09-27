@@ -2,33 +2,22 @@ package main
 
 import (
 	"ctfEngine/backend/common"
+	"ctfEngine/backend/database"
+	"ctfEngine/backend/taskapi"
 	"ctfEngine/backend/userapi"
-	"database/sql"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
+	"os"
+	"path/filepath"
 )
 
 var (
-	database *sql.DB
+	executionPath string
 )
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func loadDB() {
-	db, err := sql.Open("sqlite3", "db2.sqlite")
-	checkErr(err)
-	database = db
-	log.Println("Database start")
-}
-
 func landing(c echo.Context) error {
-	return c.File("C:/users/kerby/go/src/ctfengine/frontend/hello.html")
+	return c.File(executionPath + "/frontend/hello.html")
 }
 
 func board(c echo.Context) error {
@@ -37,20 +26,35 @@ func board(c echo.Context) error {
 	//name := claims.Name
 
 	//return c.String(http.StatusOK, "Welcome "+name+"!")
-	return c.File("C:/users/kerby/go/src/ctfengine/frontend/board.html")
+	return c.File(executionPath + "/frontend/board.html")
+}
+
+func tasks(c echo.Context) error {
+	//user := c.Get("user").(*jwt.Token)
+	//claims := user.Claims.(*jwtCustomClaims)
+	//name := claims.Name
+
+	//return c.String(http.StatusOK, "Welcome "+name+"!")
+	return c.File(executionPath + "/frontend/tasks.html")
 }
 
 func loginpage(c echo.Context) error {
-	return c.File("C:/users/kerby/go/src/ctfengine/frontend/login.html")
+	return c.File(executionPath + "/frontend/login.html")
 }
 
 func main() {
-	loadDB() // Load db
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	executionPath = filepath.Dir(ex)
+
+	database.LoadDB(executionPath) // Load db
 
 	e := echo.New()
 
-	e.Static("/css", "C:/users/kerby/go/src/ctfengine/frontend/css")
-	e.Static("/js", "C:/users/kerby/go/src/ctfengine/frontend/js")
+	e.Static("/css", executionPath+"/frontend/css")
+	e.Static("/js", executionPath+"/frontend/js")
 
 	// Middleware
 	//e.Use(middleware.Logger())
@@ -67,16 +71,14 @@ func main() {
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
 	e.POST("/api/auth/register", register) // Register user & Create JWT
+	e.GET("/api/user/:name", userapi.UserInfoByParameter)
 
-	/*
-		End API methods
-	*/
+	// End API methods
 
 	/*
 		Page routing
 	*/
 	// Pages without checking user auth
-
 	e.GET("/", landing)        // Default page with landing
 	e.GET("/login", loginpage) // Login/Register page
 
@@ -89,14 +91,21 @@ func main() {
 		TokenLookup: "cookie:token",
 	}
 
-	r := e.Group("/board")
-	r.Use(middleware.JWTWithConfig(config))
-	r.GET("", board) // Dashboard with stats
-	//r.GET("/top", )
+	b := e.Group("/board")
+	b.Use(middleware.JWTWithConfig(config))
+	b.GET("", board) // Dashboard with stats
 
-	api := e.Group("/api/users")
+	t := e.Group("/tasks")
+	t.Use(middleware.JWTWithConfig(config))
+	t.GET("", tasks) // Tasks
+
+	api := e.Group("/api")
 	api.Use(middleware.JWTWithConfig(config))
-	api.GET("/info", userapi.UserInfo) // Dashboard with stats
+	api.GET("/users/info", userapi.UserInfo) // Get info for logged in user
+
+	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
+
+	//api.POST("/changecommand", )
 	//r.GET("/top", )
 
 	e.Logger.Fatal(e.Start(":80"))

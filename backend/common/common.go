@@ -13,6 +13,7 @@ type JwtCustomClaims struct { // TODO Вынести в common нормальн�
 	UserId int    `json:"id"`
 	jwt.StandardClaims
 }
+
 func CreateCookie(name string, value string, httpOnly bool, path string) *http.Cookie {
 	cookie := new(http.Cookie)
 	cookie.Name = name
