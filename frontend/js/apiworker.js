@@ -22,6 +22,4 @@ function getinfo() {
         }
     });
 }
-
-
 window.onload = getinfo;

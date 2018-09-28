@@ -4,14 +4,15 @@ import (
 	"ctfEngine/backend/database"
 	"github.com/labstack/echo"
 	"net/http"
+	"runtime"
 )
 
 type taskStruct struct {
-	Category    string `json:"Category"`
 	Name        string `json:"Name"`
 	Description string `json:"description"`
 	Value       int    `json:"value"`
 	Flag        string `json:"flag"`
+	Status      string `json:"status"` // Solved or not
 }
 
 func GetAlwaysAliveTasks(c echo.Context) error {
@@ -22,20 +23,23 @@ func GetAlwaysAliveTasks(c echo.Context) error {
 	}
 
 	var (
-		taskOut                           = make(map[int]taskStruct)
+		taskOut                           = make(map[string][]taskStruct)
 		id, value                         int
 		category, name, description, flag string
 	)
+
 	for request.Next() {
 		request.Scan(&id, &category, &name, &description, &value, &flag)
 
-		taskOut[id] = taskStruct{
-			Category:    category,
+		taskOut[category] = append(taskOut[category], taskStruct{
 			Name:        name,
 			Description: description,
 			Value:       value,
 			Flag:        flag,
-		}
+		})
+		// Please, create issue if you have better way for this method
 	}
+
+	runtime.GC()
 	return c.JSON(http.StatusOK, taskOut)
 }
