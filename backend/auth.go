@@ -72,7 +72,7 @@ func register(c echo.Context) error {
 	password := c.FormValue("password")
 	email := c.FormValue("email")
 
-	rows := database.DB.QueryRow("SELECT(SELECT COUNT(*) FROM users WHERE username==?),(SELECT COUNT(*) FROM users WHERE email=?)", username, email)
+	rows := database.DB.QueryRow("SELECT(SELECT COUNT(*) FROM users WHERE username=?),(SELECT COUNT(*) FROM users WHERE email=?)", username, email)
 
 	var countByUsers, countByEmails int
 
