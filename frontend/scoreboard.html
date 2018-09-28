@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CTF board</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/scoreboard.css">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div id="mainWrapper">
+    <div id="container">
+        <div class="bar">
+            <span class="option">
+                <a href="/board">Main</a></span>
+            <span class="option">
+                <a href="/tasks">Tasks</a></span>
+            <span class="option current">
+                <a href="/scoreboard">Scoreboard</a></span>
+            <span class="option">
+                    <a href="/settings">Settings</a></span>
+        </div>
+        <div class="stats" id="scoreboardContainer">
+            <div class="block">
+                <div class="statsElements">For all time</div>
+                <div class="statsElements">Contest</div>
+                <div id="scoreboard">
+                    <table id="scoreboardTable">
+                        <tr>
+                            <th>Username</th>
+                            <th>Command</th>
+                            <th>Points</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/scoreboardworker.js"></script>
+</html>

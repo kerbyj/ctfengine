@@ -13,12 +13,9 @@ import (
 func UserInfo(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*common.JwtCustomClaims)
-	name := claims.Name
 	id := claims.UserId
 
-	log.Println(name, id)
-
-	var request, error = database.DB.Query("SELECT COUNT(*), username, points, command, FIND_IN_SET( points, ("+
+	var request, error = database.DB.Query("SELECT COUNT(*), username, points, IFNULL(command, \"Loner\"), FIND_IN_SET( points, ("+
 		"SELECT GROUP_CONCAT( points "+
 		"ORDER BY points DESC ) "+
 		"FROM users ) "+
@@ -38,10 +35,6 @@ func UserInfo(c echo.Context) error {
 
 	if countCheck == 0 {
 		return c.String(http.StatusBadRequest, "not found")
-	}
-
-	if command == "" {
-		command = "¯\\_(ツ)_/¯"
 	}
 
 	var dataOut = map[string]string{
@@ -73,4 +66,38 @@ func UserInfoByParameter(c echo.Context) error {
 		"command": command,
 		"status":  "ok",
 	})
+}
+
+type TopUserOut struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Command  string `json:"command"`
+	Points   int    `json:"points"`
+}
+
+func TopUserForAlltime(c echo.Context) error {
+	var request, errorGetTop = database.DB.Query("SELECT id, username, IFNULL(command, \"Loner\"), points FROM users ORDER BY points DESC LIMIT 50")
+
+	if errorGetTop != nil {
+		log.Print(errorGetTop)
+		return c.String(http.StatusConflict, "take my bear, i need to fix something")
+	}
+	defer request.Close()
+
+	var id, points int
+	var username, command string
+	var outData []TopUserOut
+
+	for request.Next() {
+		request.Scan(&id, &username, &command, &points)
+
+		outData = append(outData, TopUserOut{
+			id,
+			username,
+			command,
+			points,
+		})
+	}
+
+	return c.JSON(http.StatusOK, outData)
 }

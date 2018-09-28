@@ -1,3 +1,18 @@
 *:focus {
     outline: none;
 }
+
+a:link {
+    text-decoration: none;
+    color: white;
+}
+
+a:visited{
+    text-decoration: none;
+    color: white;
+}
+
+.current {
+    text-decoration: underline;
+    padding-bottom: 10px;
+}

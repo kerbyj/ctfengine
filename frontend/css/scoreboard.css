@@ -1,0 +1,16 @@
+table {
+    width: 100%;
+}
+
+td:first-child{
+    border-right: 2px solid #2196f3;
+}
+
+td:last-child{
+    border-left: 2px solid #2196f3;
+    text-align: center;
+}
+
+tr:nth-child(odd){
+    background-color: rgba(28,35,50,1);
+}

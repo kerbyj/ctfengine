@@ -21,21 +21,19 @@ func landing(c echo.Context) error {
 }
 
 func board(c echo.Context) error {
-	//user := c.Get("user").(*jwt.Token)
-	//claims := user.Claims.(*jwtCustomClaims)
-	//name := claims.Name
-
-	//return c.String(http.StatusOK, "Welcome "+name+"!")
 	return c.File(executionPath + "/frontend/board.html")
 }
 
 func tasks(c echo.Context) error {
-	//user := c.Get("user").(*jwt.Token)
-	//claims := user.Claims.(*jwtCustomClaims)
-	//name := claims.Name
-
-	//return c.String(http.StatusOK, "Welcome "+name+"!")
 	return c.File(executionPath + "/frontend/tasks.html")
+}
+
+func scoreboard(c echo.Context) error {
+	return c.File(executionPath + "/frontend/scoreboard.html")
+}
+
+func settings(c echo.Context) error {
+	return c.File(executionPath + "/frontend/settings.html")
 }
 
 func loginpage(c echo.Context) error {
@@ -99,9 +97,18 @@ func main() {
 	t.Use(middleware.JWTWithConfig(config))
 	t.GET("", tasks) // Tasks
 
+	s := e.Group("/scoreboard")
+	s.Use(middleware.JWTWithConfig(config))
+	s.GET("", scoreboard) // Tasks
+
+	с:= e.Group("/settings")
+	с.Use(middleware.JWTWithConfig(config))
+	с.GET("", settings) // Tasks
+
 	api := e.Group("/api")
 	api.Use(middleware.JWTWithConfig(config))
-	api.GET("/users/info", userapi.UserInfo) // Get info for logged in user
+	api.GET("/users/info", userapi.UserInfo) // Get info for logged-in user
+	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
 
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
 
