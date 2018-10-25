@@ -1,14 +1,13 @@
 function getinfo() {
     $.post({
         type: 'get',
-        url: 'http://localhost/api/users/info',
+        url: 'http://localhost/api/user/info',
         success: function(data) {
-            //localStorage.setItem("jwtToken", data.token);
             console.log(data);
 
-            document.getElementById("username").innerText = data.name;
+            document.getElementById("name").innerText = data.name;
             delete data.name;
-            document.getElementById("command").innerText = data.command;
+            document.getElementById("commandstatus").innerText = data.command;
             delete data.command;
 
             var statsUserContainer = document.getElementById("userStats");
@@ -16,8 +15,26 @@ function getinfo() {
             $.each(data, function (key, value) {
                 let tmpStat = document.createElement("div");
                 tmpStat.classList.add("statsElements");
-                tmpStat.innerHTML = `${key}<span class="valueInfo">${value}</span>`;
+                tmpStat.innerHTML = `${key} ${value}`;
+
+                statsUserContainer.innerHTML += `<hr width="30%" align="left" style="margin-left:15px;">`;
                 statsUserContainer.appendChild(tmpStat);
+            })
+        }
+    });
+
+    $.post({
+        type: 'get',
+        url: 'http://localhost/api/board/getstats',
+        success: function(data) {
+            console.log(data);
+
+            $.each(data, function (key, value) {
+                let tmpContainer = document.getElementById(key);
+
+                $.each(value, function (statKey, statValue) {
+                    tmpContainer.innerHTML+=`<span style="margin-right: 30px;">${statKey} <b>${statValue}</b></span>`
+                })
             })
         }
     });

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ctfEngine/backend/boardapi"
 	"ctfEngine/backend/common"
 	"ctfEngine/backend/database"
 	"ctfEngine/backend/taskapi"
@@ -15,30 +16,6 @@ import (
 var (
 	executionPath string
 )
-
-func landing(c echo.Context) error {
-	return c.File(executionPath + "/frontend/hello.html")
-}
-
-func board(c echo.Context) error {
-	return c.File(executionPath + "/frontend/board.html")
-}
-
-func tasks(c echo.Context) error {
-	return c.File(executionPath + "/frontend/tasks.html")
-}
-
-func scoreboard(c echo.Context) error {
-	return c.File(executionPath + "/frontend/scoreboard.html")
-}
-
-func settings(c echo.Context) error {
-	return c.File(executionPath + "/frontend/settings.html")
-}
-
-func loginpage(c echo.Context) error {
-	return c.File(executionPath + "/frontend/login.html")
-}
 
 func main() {
 	ex, err := os.Executable()
@@ -63,26 +40,20 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST},
 	}))
 
-	/*
-		API methods
-	*/
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
 	e.POST("/api/auth/register", register) // Register user & Create JWT
 	e.GET("/api/user/:name", userapi.UserInfoByParameter)
 
-	// End API methods
+	e.GET("/", func (c echo.Context) error {
+		return c.File(executionPath + "/frontend/hello.html")
+	})        // Default page with landing
 
-	/*
-		Page routing
-	*/
-	// Pages without checking user auth
-	e.GET("/", landing)        // Default page with landing
-	e.GET("/login", loginpage) // Login/Register page
+	e.GET("/login", func (c echo.Context) error {
+		return c.File(executionPath + "/frontend/login.html")
+	}) // Login/Register page
 
-	// Restricted group, need to get JWT
 
-	// JWT config
 	config := middleware.JWTConfig{
 		Claims:      &common.JwtCustomClaims{},
 		SigningKey:  secretJWTkey,
@@ -90,30 +61,42 @@ func main() {
 	}
 
 	b := e.Group("/board")
-	b.Use(middleware.JWTWithConfig(config))
-	b.GET("", board) // Dashboard with stats
-
 	t := e.Group("/tasks")
-	t.Use(middleware.JWTWithConfig(config))
-	t.GET("", tasks) // Tasks
-
 	s := e.Group("/scoreboard")
-	s.Use(middleware.JWTWithConfig(config))
-	s.GET("", scoreboard) // Tasks
-
-	с:= e.Group("/settings")
-	с.Use(middleware.JWTWithConfig(config))
-	с.GET("", settings) // Tasks
-
+	c:= e.Group("/settings")
 	api := e.Group("/api")
+
+
+	b.Use(middleware.JWTWithConfig(config))
+	t.Use(middleware.JWTWithConfig(config))
+	s.Use(middleware.JWTWithConfig(config))
+	c.Use(middleware.JWTWithConfig(config))
 	api.Use(middleware.JWTWithConfig(config))
-	api.GET("/users/info", userapi.UserInfo) // Get info for logged-in user
+
+
+	b.GET("", func (c echo.Context) error { // b /board
+		return c.File(executionPath + "/frontend/board.html")
+	})
+
+	t.GET("", func (c echo.Context) error { // t /tasks
+		return c.File(executionPath + "/frontend/tasks.html")
+	})
+
+	s.GET("", func (c echo.Context) error { // s scoreboard
+		return c.File(executionPath + "/frontend/scoreboard.html")
+	})
+
+	c.GET("", func (c echo.Context) error { // c settings
+		return c.File(executionPath + "/frontend/settings.html")
+	})
+
+
+	api.GET("/user/info", userapi.UserInfo) // Get info for logged-in user
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
-
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
+	api.GET("/tasks/getTaskById/:id", taskapi.GetTaskById)
+	//api.GET("/tasks/GetContestTasks", )
 
-	//api.POST("/changecommand", )
-	//r.GET("/top", )
-
+	api.GET("/board/getstats", boardapi.BoardStats)
 	e.Logger.Fatal(e.Start(":80"))
 }

@@ -1,0 +1,99 @@
+.tasks {
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+    display: -ms-flexbox; /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+    display: flex; /* NEW, Spec - Firefox, Chrome, Opera */
+
+    justify-content: center;
+    align-items: center;
+}
+
+.tableRaw {
+    display: table-row;
+}
+
+.column {
+    display: table-cell;
+}
+
+.headerCategory {
+    background-color: #00dcff;
+}
+
+.cell {
+    width: 100px;
+    padding: 15px;
+    border: 1px #00dcff solid;
+    text-align: center;
+    margin: 20px;
+    font-size: 1.25em;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+
+}
+
+/* Modal Content/Box */
+.modal-content {
+
+    margin: 10% auto; /* 15% from the top and centered */
+    width: 45%; /* Could be more or less, depending on screen size */
+    padding: 0px 15px;
+
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+    margin-top: 10px;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 2px 16px;
+    background-color: #00A7CA;
+}
+
+/* The Close Button */
+.close {
+    color: black;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.close:hover {
+    color: #7c7c7c;
+    cursor: pointer;
+}
+
+#taskName {
+    font-size: 1.25em;
+}
+
+#taskDescription {
+    width: 80%;
+    border: 2px black solid;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5px 30px 30px 30px;
+}
+
+#attachments {
+    font-size: 18px;
+    vertical-align: top;
+    display: inline-flex;
+}

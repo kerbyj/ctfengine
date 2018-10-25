@@ -1,53 +1,57 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto');
-
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro');
 
 body {
-    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Anonymous Pro', monospace;
     background-color: #1C1F2B;
     color: #fff;
 }
 
-
 .bar {
+    color: #00dcff;
     text-align: center;
     margin-top: 25px;
     margin-bottom: 25px;
-    font-weight: 400;
 }
 
 .option {
+    color: #00dcff;
     margin: 20px;
-    font-size: 22px;
-    padding-bottom: 10px;
+    font-size: 1.25em;
+    letter-spacing: -1px;
 }
 
-.option:hover{
+
+.option:hover {
     cursor: pointer;
 }
 
 .stats {
     margin-top: 50px;
-    margin-left: auto;
+    margin-left: 30%;
     margin-right: auto;
-    width: 60%;
+    width: 50%;
 }
 
 .block {
     width: 100%;
-    background-color: rgba(0,0,0,0.15);
     margin: 10px 10px 10px 0px;
-    padding: 15px;
     display: table;
     font-size: 1.1em;
 }
 
+.header{
+    color: #00dcff;
+
+}
 
 .infoInBlocks {
     display: table-cell;
-    padding: 10px;
+    vertical-align: top;
+    align:left;
+    padding-bottom: 15px;
 }
 
-#userInfo{
+#userInfo {
     vertical-align: top;
     text-align: center;
     border-right: 2px solid #1C1F2B;
@@ -61,26 +65,23 @@ body {
 }
 
 .profilePhoto {
-    margin-right: auto;
-    margin-left: auto;
     text-align: center;
-    height: 150px;
-    width: 150px;
+    height: 200px;
+    width: 200px;
     background: url("https://avatars0.githubusercontent.com/u/31669858?s=460&v=4");
     background-size: contain;
-    margin-bottom: 15px;
     border-radius: 100%;
-    border: 3px solid #2196f3;
+    margin-left: -60px;
 }
 
 .statsElements {
-    display: inline-block;
-    margin-right: 10px;
-    border: 2px solid #2196f3;
-    border-radius: 10px;
-    padding: 5px;
+    /*display: inline-block;*/
     font-size: 0.9em;
     margin-bottom: 10px;
+    padding-bottom: 30px;
+    padding-top: 10px;
+    /*border-top: 1px solid black;*/
+
 }
 
 .valueInfo {
@@ -90,4 +91,23 @@ body {
 
 .valueInfo::before {
     content: " ";
+}
+
+.profile{
+    margin-top:60px;
+}
+
+#name{
+    font-size: 1.8em;
+}
+
+.hrstyle {
+    width: 25%;
+    align: left;
+}
+
+.statHeader{
+    padding: 0!important;
+    margin: 0;
+    width: 350px;
 }

@@ -3,6 +3,7 @@ package userapi
 import (
 	"ctfEngine/backend/common"
 	"ctfEngine/backend/database"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"log"
@@ -15,7 +16,7 @@ func UserInfo(c echo.Context) error {
 	claims := user.Claims.(*common.JwtCustomClaims)
 	id := claims.UserId
 
-	var request, error = database.DB.Query("SELECT COUNT(*), username, points, IFNULL(command, \"Loner\"), FIND_IN_SET( points, ("+
+	var request, error = database.DB.Query("SELECT COUNT(*), username, points, 1-ROUND(flagright/flagfalse, 2) as bff, IFNULL(command, \"Loner\"), FIND_IN_SET( points, ("+
 		"SELECT GROUP_CONCAT( points "+
 		"ORDER BY points DESC ) "+
 		"FROM users ) "+
@@ -29,9 +30,10 @@ func UserInfo(c echo.Context) error {
 
 	var countCheck, points, rank int
 	var username, command string
+	var bffactor float64
 
 	request.Next()
-	request.Scan(&countCheck, &username, &points, &command, &rank)
+	request.Scan(&countCheck, &username, &points, &bffactor, &command, &rank)
 
 	if countCheck == 0 {
 		return c.String(http.StatusBadRequest, "not found")
@@ -41,6 +43,7 @@ func UserInfo(c echo.Context) error {
 		"name":          username,
 		"command":       command,
 		"Points":        strconv.Itoa(points),
+		"Bruteforcer factor": fmt.Sprintf("%.2f%%", bffactor),
 		"Overall place": strconv.Itoa(rank),
 	}
 
