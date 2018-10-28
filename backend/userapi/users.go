@@ -16,7 +16,7 @@ func UserInfo(c echo.Context) error {
 	claims := user.Claims.(*common.JwtCustomClaims)
 	id := claims.UserId
 
-	var request, error = database.DB.Query("SELECT COUNT(*), username, points, 1-ROUND(flagright/flagfalse, 2) as bff, IFNULL(command, \"Loner\"), FIND_IN_SET( points, ("+
+	var request, error = database.DB.Query("SELECT COUNT(*), username, points, ROUND(flagfalse/(flagfalse+flagright), 2) as bff, commandid, FIND_IN_SET( points, ("+
 		"SELECT GROUP_CONCAT( points "+
 		"ORDER BY points DESC ) "+
 		"FROM users ) "+
@@ -28,12 +28,28 @@ func UserInfo(c echo.Context) error {
 	}
 	defer request.Close()
 
-	var countCheck, points, rank int
-	var username, command string
+	var countCheck, points, rank, command, captainId int
+	var username, commandName string
 	var bffactor float64
 
 	request.Next()
 	request.Scan(&countCheck, &username, &points, &bffactor, &command, &rank)
+
+	log.Println("command", command)
+	if command == 0 {
+		commandName = "no command :("
+	} else {
+		var requestCommandName, errGetCommand = database.DB.Query("SELECT name, captainid FROM command WHERE id=?", command)
+		if errGetCommand != nil {
+			log.Println(errGetCommand)
+		}
+
+		requestCommandName.Next()
+		requestCommandName.Scan(&commandName, &captainId)
+		if captainId == id {
+			commandName = "Captain of " + commandName
+		}
+	}
 
 	if countCheck == 0 {
 		return c.String(http.StatusBadRequest, "not found")
@@ -41,7 +57,7 @@ func UserInfo(c echo.Context) error {
 
 	var dataOut = map[string]string{
 		"name":          username,
-		"command":       command,
+		"command":       commandName,
 		"Points":        strconv.Itoa(points),
 		"Bruteforcer factor": fmt.Sprintf("%.2f%%", bffactor),
 		"Overall place": strconv.Itoa(rank),
@@ -53,12 +69,12 @@ func UserInfo(c echo.Context) error {
 func UserInfoByParameter(c echo.Context) error {
 	var requestedUser = c.Param("name")
 
-	var request = database.DB.QueryRow("SELECT COUNT(*), id, email, command, status FROM users WHERE username=?", requestedUser)
+	var request = database.DB.QueryRow("SELECT COUNT(*), id, email, status FROM users WHERE username=?", requestedUser)
 
 	var countCheck, id, status int
 	var email, command string
 
-	request.Scan(&countCheck, &id, &email, &command, &status)
+	request.Scan(&countCheck, &id, &email, &status)
 
 	if countCheck == 0 {
 		return c.String(http.StatusBadRequest, "not found")
@@ -74,12 +90,12 @@ func UserInfoByParameter(c echo.Context) error {
 type TopUserOut struct {
 	Id       int    `json:"id"`
 	Username string `json:"username"`
-	Command  string `json:"command"`
 	Points   int    `json:"points"`
+	Command  string `json:"command"`
 }
 
 func TopUserForAlltime(c echo.Context) error {
-	var request, errorGetTop = database.DB.Query("SELECT id, username, IFNULL(command, \"Loner\"), points FROM users ORDER BY points DESC LIMIT 50")
+	var request, errorGetTop = database.DB.Query("SELECT users.id, username, points, command.name FROM users left join command on users.commandid = command.id ORDER BY points DESC LIMIT 50")
 
 	if errorGetTop != nil {
 		log.Print(errorGetTop)
@@ -92,13 +108,17 @@ func TopUserForAlltime(c echo.Context) error {
 	var outData []TopUserOut
 
 	for request.Next() {
-		request.Scan(&id, &username, &command, &points)
+		request.Scan(&id, &username, &points, &command)
+
+		if command == "" {
+			command = "Without command"
+		}
 
 		outData = append(outData, TopUserOut{
 			id,
 			username,
-			command,
 			points,
+			command,
 		})
 	}
 

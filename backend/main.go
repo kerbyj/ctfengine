@@ -8,7 +8,7 @@ import (
 	"ctfEngine/backend/userapi"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	_ "github.com/mattn/go-sqlite3"
+	//_ "github.com/mattn/go-sqlite3"
 	"os"
 	"path/filepath"
 )
@@ -94,7 +94,9 @@ func main() {
 	api.GET("/user/info", userapi.UserInfo) // Get info for logged-in user
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
+	api.GET("/tasks/getContestList", taskapi.GetContestList)
 	api.GET("/tasks/getTaskById/:id", taskapi.GetTaskById)
+	api.POST("/tasks/checkFlag", taskapi.CheckFlag)
 	//api.GET("/tasks/GetContestTasks", )
 
 	api.GET("/board/getstats", boardapi.BoardStats)

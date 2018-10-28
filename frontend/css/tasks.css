@@ -1,5 +1,4 @@
 .tasks {
-    margin-top: 50px;
     margin-left: auto;
     margin-right: auto;
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6, BB7 */
@@ -51,21 +50,21 @@
     margin: 10% auto; /* 15% from the top and centered */
     width: 45%; /* Could be more or less, depending on screen size */
     padding: 0px 15px;
-
+    color: white;
 }
 
 /* Modal Footer */
 .modal-footer {
     padding: 2px 16px;
-    background-color: #5cb85c;
-    color: white;
+    background-color: #344769;
+    color: #202041;
     margin-top: 10px;
 }
 
 /* Modal Body */
 .modal-body {
     padding: 2px 16px;
-    background-color: #00A7CA;
+    background-color: #344769;
 }
 
 /* The Close Button */
@@ -85,15 +84,58 @@
 }
 
 #taskDescription {
-    width: 80%;
+    width: 90%;
     border: 2px black solid;
     margin-left: auto;
     margin-right: auto;
-    padding: 5px 30px 30px 30px;
+}
+
+#taskDescriptionText{
+    padding: 5px 30px 20px 20px;
 }
 
 #attachments {
-    font-size: 18px;
-    vertical-align: top;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    /*display: inline-flex;*/
+}
+
+.attachment{
+    font-size: 14px;
+}
+
+.material-icons {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+#flagfield{
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    margin-bottom: 60px;
+    margin-top: 10px;
+}
+
+.inputFlag{
+    width:calc(100% - 20px);
+    padding:10px;
+    color: black;
+    font-style: italic;
+}
+
+#sendFlag{
+    float:right;
+    background-color: #202041;
+    margin-top:10px;
+    padding: 3px 10px;
+    color: #00dcff;
+}
+
+.solved {
+    background-color: #00ac27;
 }

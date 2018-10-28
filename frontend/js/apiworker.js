@@ -33,7 +33,7 @@ function getinfo() {
                 let tmpContainer = document.getElementById(key);
 
                 $.each(value, function (statKey, statValue) {
-                    tmpContainer.innerHTML+=`<span style="margin-right: 30px;">${statKey} <b>${statValue}</b></span>`
+                    tmpContainer.innerHTML+=`<span class ="stat" style="margin-right: 30px;">${statKey} <b>${statValue}</b></span>`
                 })
             })
         }

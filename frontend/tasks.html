@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/board.css">
     <link rel="stylesheet" href="css/tasks.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"  rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 </head>
@@ -24,9 +24,6 @@
             <span class="option">
                     <a href="/settings">Settings</a></span>
         </div>
-        <div class="tasks" id="tasksContainer">
-
-        </div>
     </div>
 </div>
 
@@ -35,18 +32,32 @@
     <!-- Modal content -->
     <div class="modal-content">
         <div class="modal-body">
-            <table width="100%"><tr><td><span id="taskName"></span></td><td width="50%" align="right"><span class="close">&times;</span></td></tr></table>
-            <div id="taskDescription"></div>
-            <div id="attachments">
-                <i class="material-icons md-14">cloud_upload</i>Huj
-
+            <table width="100%">
+                <tr>
+                    <td><span id="taskName"></span></td>
+                    <td width="50%" align="right"><span class="close">&times;</span></td>
+                </tr>
+            </table>
+            <div id="taskDescription">
+                <div id="taskDescriptionText"></div>
             </div>
+            <div id="attachments">
+                <span class="attachment"><i class="material-icons md-14">cloud_upload</i> Huj</span>
+                <br>
+                <span class="attachment"><i class="material-icons md-14">cloud_upload</i> Huj</span>
+            </div>
+            <div id="flagfield">
+                <input type="text" placeholder="insert_your_answer" class="inputFlag" id="flagValue">
 
+                <div id="sendFlag">Submit</div>
+                <div></div>
+            </div>
         </div>
-
+        <!---
         <div class="modal-footer">
             <h3>Modal Footer</h3>
         </div>
+        --->
     </div>
 
 </div>
