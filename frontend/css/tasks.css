@@ -10,8 +10,12 @@
     align-items: center;
 }
 
-.tableRaw {
+.tableraw {
     display: table-row;
+    background-color: #03122f;
+    margin-bottom: 30px;
+    margin-top: 5px;
+    padding: 0 25px;
 }
 
 .column {
@@ -25,10 +29,15 @@
 .cell {
     width: 100px;
     padding: 15px;
-    border: 1px #00dcff solid;
+    /*border: 1px #00dcff solid;*/
     text-align: center;
     margin: 20px;
     font-size: 1.25em;
+}
+
+.task:hover {
+    cursor: pointer;
+    background-color: red;
 }
 
 /* The Modal (background) */
@@ -48,7 +57,7 @@
 .modal-content {
 
     margin: 10% auto; /* 15% from the top and centered */
-    width: 45%; /* Could be more or less, depending on screen size */
+    width: 80%; /* Could be more or less, depending on screen size */
     padding: 0px 15px;
     color: white;
 }
@@ -56,15 +65,14 @@
 /* Modal Footer */
 .modal-footer {
     padding: 2px 16px;
-    background-color: #344769;
-    color: #202041;
+    background-color: #03122f;
     margin-top: 10px;
 }
 
 /* Modal Body */
 .modal-body {
     padding: 2px 16px;
-    background-color: #344769;
+    background-color: #03122f;
 }
 
 /* The Close Button */
@@ -83,6 +91,10 @@
     font-size: 1.25em;
 }
 
+#taskName:before {
+    content: "~/tasks/";
+}
+
 #taskDescription {
     width: 90%;
     border: 2px black solid;
@@ -91,7 +103,8 @@
 }
 
 #taskDescriptionText{
-    padding: 5px 30px 20px 20px;
+    margin-top: 25px;
+    font-size: 1.1em;
 }
 
 #attachments {
@@ -117,12 +130,11 @@
     margin-left: auto;
     margin-right: auto;
     border: none;
-    margin-bottom: 60px;
     margin-top: 10px;
 }
 
 .inputFlag{
-    width:calc(100% - 20px);
+    width:100%;
     padding:10px;
     color: black;
     font-style: italic;
@@ -133,9 +145,60 @@
     background-color: #202041;
     margin-top:10px;
     padding: 3px 10px;
-    color: #00dcff;
+    color: #56ea0e;
 }
 
 .solved {
     background-color: #00ac27;
+}
+
+.payload {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dataBlock {
+    display: table-cell;
+    width: 40%;
+    padding: 5px;
+
+}
+
+.dataBlock:nth-child(odd){
+    border-right: 1px #00dcff dashed;
+    padding-right: 45px;
+}
+
+.dataBlock:nth-child(even){
+    padding-left: 45px;
+}
+
+.firstRow {
+    padding-bottom: 30px;
+}
+
+.secondRow {
+    padding: 0!important;
+}
+
+.statElement {
+    display: inline-block;
+    width: 50%;
+    white-space: nowrap;
+    padding: 15px 0;
+}
+
+.statElementKey{
+    color: #f8e71c;
+    margin-right: 30px;
+}
+
+.statElementKey:before{
+    content: "-> ";
+    color: #f8e71c;
+}
+
+.statElementValue{
+    color:red;
 }

@@ -33,13 +33,14 @@ func main() {
 
 	// Middleware
 	//e.Use(middleware.Logger())
-	//e.Use(middleware.Recover())
+	//e.Use(middleware.Secure())
 
+	/*
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
 		AllowMethods: []string{echo.GET, echo.POST},
 	}))
-
+	*/
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
 	e.POST("/api/auth/register", register) // Register user & Create JWT
@@ -93,6 +94,9 @@ func main() {
 
 	api.GET("/user/info", userapi.UserInfo) // Get info for logged-in user
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
+	api.GET("/users/getTopForContest/:contestid", userapi.GetTopForContest)
+
+
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
 	api.GET("/tasks/getContestList", taskapi.GetContestList)
 	api.GET("/tasks/getTaskById/:id", taskapi.GetTaskById)
@@ -100,5 +104,7 @@ func main() {
 	//api.GET("/tasks/GetContestTasks", )
 
 	api.GET("/board/getstats", boardapi.BoardStats)
+
+	//e.Logger.Fatal(e.StartTLS(":1323", "cert.pem", "key.pem"))
 	e.Logger.Fatal(e.Start(":80"))
 }

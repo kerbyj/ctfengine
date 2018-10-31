@@ -20,22 +20,24 @@
             <span class="option">
                 <a href="/tasks">Tasks</a></span>
             <span class="option current">
-                <a href="/scoreboard">Scoreboard</a></span>
+                <a href="/scoreboard" class="currentPage">Scoreboard</a></span>
             <span class="option">
                     <a href="/settings">Settings</a></span>
         </div>
+
         <div class="stats" id="scoreboardContainer">
             <div class="block">
-                <div class="statsElements">For all time</div>
-                <div class="statsElements">Contest</div>
-                <div id="scoreboard">
-                    <table id="scoreboardTable">
-                        <tr>
-                            <th>Username</th>
-                            <th>Command</th>
-                            <th>Points</th>
-                        </tr>
-                    </table>
+                <div id="contests" class="scoreboardTable">
+                    <div class="oneRow">
+                        <div class="oneCell rank">Type</div>
+                        <div class="oneCell username">Name</div>
+                        <div class="oneCell score">TasksCount</div>
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div id="scoreboard" class="scoreboardTable">
+
                 </div>
             </div>
 

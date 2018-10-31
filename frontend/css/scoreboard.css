@@ -14,3 +14,70 @@ td:last-child{
 tr:nth-child(odd){
     background-color: rgba(28,35,50,1);
 }
+
+.scoreboardTable {
+    display: table;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+}
+
+.oneRow{
+    display: table-row;
+    border-bottom: 1px #00dcff solid;
+}
+
+.oneRow:first-child{
+    color:red;
+}
+
+.oneRow:last-child{
+    border-bottom: none;
+}
+
+#contests > .oneRow > .oneCell {
+    padding: 5px 0;
+}
+
+#contests > .selected:hover{
+    background-color: red;
+    cursor: pointer;
+}
+
+.oneCell{
+    display: table-cell;
+    text-align: center;
+
+    padding: 15px 0;
+}
+
+.rank {
+    width: 10%;
+    border-right: 1px #00dcff solid;;
+}
+
+.solvedTasks {
+    width: 30%;
+}
+
+.username{
+    width: 45%;
+}
+
+.score {
+    width: 15%;
+    border-right: 1px #00dcff solid;;
+}
+
+select {
+    border: 0 none;
+    color: #FFFFFF;
+    background: transparent;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 2px 10px;
+    width: 150px;
+    *width: 350px;
+    *background: #58B14C;
+}

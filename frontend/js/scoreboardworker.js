@@ -1,19 +1,57 @@
 var scoreboardContainer = document.getElementById("scoreboardTable");
 
-function getTopForAllTime() {
+function getTopForAllTime(contestId) {
     $.post({
         type: 'get',
-        url: 'http://localhost/api/users/topForAllTime',
+        url: 'http://localhost/api/users/getTopForContest/'+contestId,
         success: function(data) {
             console.log(data);
-
+            let scoreboard = document.getElementById("scoreboard");
+            //scoreboard.innerHTML = "";
+            scoreboard.innerHTML = `<div class="oneRow">
+                        <div class="oneCell rank"></div>
+                        <div class="oneCell username">USERNAME</div>
+                        <div class="oneCell score">SCORE</div>
+                        <div class="oneCell solvedTasks">SOLVED TASKS</div>
+                    </div>`;
             $.each(data, function (key, item) {
-                let userRow = document.createElement("tr");
-                userRow.innerHTML = `<td>${item.username}</td><td>${item.command}</td><td>${item.points}</td>`;
+                console.log(key, item);
+                let topParticipantContainer = document.createElement("div");
+                topParticipantContainer.classList.add("oneRow");
 
-                scoreboardContainer.appendChild(userRow);
+                topParticipantContainer.innerHTML = `<div class="oneCell rank">${item.place}</div><div class="oneCell username">${item.name}</div><div class="oneCell score">${item.points}</div><div class="oneCell solvedTasks">${item.solved}/${item.all_tasks_count}</div>`;
+                scoreboard.appendChild(topParticipantContainer);
             })
         }
     });
 }
-window.onload = getTopForAllTime();
+
+function selectContest(){
+    //console.log(this.targetContest)
+    getTopForAllTime(this.targetContest);
+}
+
+function drawContests(){
+    $.post({
+        type: 'get',
+        url: 'http://localhost/api/tasks/getContestList',
+        success: function(data) {
+            console.log(data);
+            let contests = document.getElementById("contests");
+            $.each(data, function (key, item) {
+                console.log(key, item);
+                let contestContainer = document.createElement("div");
+                contestContainer.classList.add("oneRow");
+                contestContainer.classList.add("selected");
+
+                contestContainer.targetContest = item.id;
+                contestContainer.addEventListener("click", selectContest);
+
+                contestContainer.innerHTML = `<div class="oneCell rank">${item.type}</div><div class="oneCell username">${item.name}</div><div class="oneCell score">${item.tasks_count}</div>`;
+                contests.appendChild(contestContainer);
+            })
+        }
+    });
+}
+
+window.onload = drawContests();

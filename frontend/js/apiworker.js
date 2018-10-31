@@ -17,8 +17,9 @@ function getinfo() {
                 tmpStat.classList.add("statsElements");
                 tmpStat.innerHTML = `${key} ${value}`;
 
-                statsUserContainer.innerHTML += `<hr width="30%" align="left" style="margin-left:15px;">`;
                 statsUserContainer.appendChild(tmpStat);
+                statsUserContainer.innerHTML += `<hr width="30%" align="left" style="margin-left:15px; color: #00dcff">`;
+
             })
         }
     });

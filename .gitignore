@@ -2,3 +2,4 @@
 *.exe
 *.sqlite
 *.elf
+*.pem

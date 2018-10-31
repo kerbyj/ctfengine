@@ -14,7 +14,7 @@
 
         <div class="bar">
             <span class="option current">
-                <a href="/board">Main</a></span>
+                <a href="/board" class="currentPage">Main</a></span>
             <span class="option">
                 <a href="/tasks">Tasks</a></span>
             <span class="option">
@@ -24,9 +24,12 @@
         </div>
 
         <div class="stats">
-            <span class="header">User_overview</span>
             <div class="block">
+
                 <div class="infoInBlocks">
+                    <div class="blockName">
+                        ~/main/user_overview
+                    </div>
                     <div class="profilePhoto"></div>
                     <div class="profile">
                         <span id="name"></span>
@@ -38,11 +41,11 @@
                     <div id="userStats"></div>
                 </div>
             </div>
-            <hr color="#00DCFF" style="margin-left: -60px; width:calc( 100% + 60px)">
-            <span class="header">Platform_overview</span>
+            <hr color="#00DCFF" style="width:100%">
             <div class="block">
+
                 <span class="infoInBlocks statHeader">
-                    <span class="header">Board_stat</span>
+                    <span>Board_stat</span>
                 </span>
                 <div class="info infoInBlocks">
                     <div id="boardStats"></div>
@@ -50,7 +53,7 @@
             </div>
             <div class="block">
                 <div class="infoInBlocks statHeader">
-                    <span class="header">Tasks_stat_count</span>
+                    <span>Tasks_stat_count</span>
                 </div>
                 <div class="info infoInBlocks">
                     <div id="tasksStats"></div>

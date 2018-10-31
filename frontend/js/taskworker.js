@@ -3,10 +3,13 @@ function drawTask() {
         type: 'get',
         url: 'http://localhost/api/tasks/getTaskById/'+this.needToDraw,
         success: function(data) {
-            //console.log(data);
-            document.getElementById("taskName").innerText = `${data.name} - ${data.value}`;
+            console.log(data);
+            document.getElementById("taskName").innerText = `${data.name}`;
             document.getElementById("taskName").taskid = data.id;
             document.getElementById("taskDescriptionText").innerText = data.description;
+            document.getElementById("taskCategory").innerHTML = `<span class="statElementKey">Category</span><span class="statElementValue">${data.category}</span>`;
+            document.getElementById("taskContest").innerHTML = `<span class="statElementKey">Contest</span><span class="statElementValue">${data.contest}</span>`;
+            document.getElementById("taskValue").innerHTML = `<span class="statElementKey">Value</span><span class="statElementValue">${data.value}</span>`;
         }
     });
 }
@@ -16,6 +19,7 @@ function getAlwaysAliveTasks() {
         type: 'get',
         url: 'http://localhost/api/tasks/getAlwaysAliveTasks',
         success: function(data) {
+            console.log(data)
             $.each(data, function (key, value) {
                 let globalContainer = document.getElementById("container");
                 let categoryHeader = document.createElement("span");
@@ -33,6 +37,7 @@ function getAlwaysAliveTasks() {
 
                     tmpTasks[category].push(value);
                 });
+                //console.log(tmpTasks)
                 let container = document.createElement("div");
                 container.classList.add("tableraw");
 
@@ -70,8 +75,10 @@ function getAlwaysAliveTasks() {
                     });
                     container.appendChild(tmpColumn);
                     containerForTask.appendChild(container);
+
                 });
                 globalContainer.appendChild(containerForTask);
+
             });
         }
     });

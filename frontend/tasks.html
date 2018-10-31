@@ -18,7 +18,7 @@
                 <a href="/board">Main</a>
             </span>
             <span class="option current">
-                <a href="/tasks">Tasks</a></span>
+                <a href="/tasks" class="currentPage">Tasks</a></span>
             <span class="option">
                 <a href="/scoreboard">Scoreboard</a></span>
             <span class="option">
@@ -34,30 +34,42 @@
         <div class="modal-body">
             <table width="100%">
                 <tr>
-                    <td><span id="taskName"></span></td>
+                    <td></td>
                     <td width="50%" align="right"><span class="close">&times;</span></td>
                 </tr>
             </table>
-            <div id="taskDescription">
-                <div id="taskDescriptionText"></div>
+            <div class="payload" style="display: table;">
+                <div class="dataBlock firstRow">
+                    <span id="taskName"></span>
+                    <div id="taskDescriptionText"></div>
+                </div>
+                <div class="dataBlock firstRow">
+                    <div id="attachments">
+                        <span class="attachment"><i class="material-icons md-14">cloud_upload</i> Huj</span>
+                        <br>
+                        <span class="attachment"><i class="material-icons md-14">cloud_upload</i> Huj</span>
+                    </div>
+                </div>
             </div>
-            <div id="attachments">
-                <span class="attachment"><i class="material-icons md-14">cloud_upload</i> Huj</span>
-                <br>
-                <span class="attachment"><i class="material-icons md-14">cloud_upload</i> Huj</span>
-            </div>
-            <div id="flagfield">
-                <input type="text" placeholder="insert_your_answer" class="inputFlag" id="flagValue">
+            <div class="payload" style="display: table;">
+                <div class="dataBlock"></div>
+                <div class="dataBlock secondRow">
+                    <div id="flagfield">
+                        <input type="text" placeholder="insert_your_answer" class="inputFlag" id="flagValue">
 
-                <div id="sendFlag">Submit</div>
-                <div></div>
+                        <div id="sendFlag">Submit</div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="modal-footer">
+            <div class="payload" id="taskStatElements">
+                <div class="statElement" id="taskCategory"></div><div class="statElement" id="taskContest"></div><div class="statElement" id="taskValue"></div>
             </div>
         </div>
-        <!---
-        <div class="modal-footer">
-            <h3>Modal Footer</h3>
-        </div>
-        --->
     </div>
 
 </div>
