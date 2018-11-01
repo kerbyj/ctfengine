@@ -20,7 +20,7 @@ type contestStruct struct {
 }
 
 func GetContestList(c echo.Context) error {
-	var getAllContests, errGetAllContests = database.DB.Query("select id, name, type, (select count(*) from tasks where contestid=contests.id) as taskscount from contests")
+	var getAllContests, errGetAllContests = database.DB.Query("select id, name, type, (select count(*) from tasks where contestid=contests.id) as taskscount from contests where visibility=true")
 	if errGetAllContests != nil {
 		return c.String(http.StatusBadRequest, "shit happens")
 	}
@@ -64,7 +64,7 @@ func GetAlwaysAliveTasks(c echo.Context) error {
 	getCommandId.Next()
 	getCommandId.Scan(&userCommandId)
 
-	var GetAllTasks, errGetAliveTasks = database.DB.Query("SELECT tasks.id, category, tasks.name, value, contests.name FROM tasks left join contests on tasks.contestid = contests.id order by contestid")
+	var GetAllTasks, errGetAliveTasks = database.DB.Query("SELECT tasks.id, category, tasks.name, value, contests.name FROM tasks left join contests on tasks.contestid = contests.id where contests.visibility = true order by contestid")
 	if errGetAliveTasks != nil {
 		return c.String(http.StatusBadRequest, "shit happens")
 	}

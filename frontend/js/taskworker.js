@@ -1,7 +1,7 @@
 function drawTask() {
     $.post({
         type: 'get',
-        url: 'http://localhost/api/tasks/getTaskById/'+this.needToDraw,
+        url: GLOBAL_ENDPOINT+'/api/tasks/getTaskById/'+this.needToDraw,
         success: function(data) {
             console.log(data);
             document.getElementById("taskName").innerText = `${data.name}`;
@@ -17,11 +17,11 @@ function drawTask() {
 function getAlwaysAliveTasks() {
     $.post({
         type: 'get',
-        url: 'http://localhost/api/tasks/getAlwaysAliveTasks',
+        url: GLOBAL_ENDPOINT+'/api/tasks/getAlwaysAliveTasks',
         success: function(data) {
-            console.log(data)
+            console.log(data);
             $.each(data, function (key, value) {
-                let globalContainer = document.getElementById("container");
+                let globalContainer = document.getElementById("tasksContainer");
                 let categoryHeader = document.createElement("span");
                 categoryHeader.classList.add("tasks");
                 categoryHeader.classList.add("header");
@@ -90,6 +90,7 @@ var btn = document.getElementById("myBtn");
 var span = document.getElementsByClassName("close")[0];
 function showModal() {
     modal.style.display = "block";
+    //document.getElementById("tasksContainer").style.visibility = "hidden";
 };
 
 span.onclick = function() {
@@ -100,6 +101,7 @@ span.onclick = function() {
 window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
+        //document.getElementById("tasksContainer").style.visibility = "visible";
     }
 };
 
@@ -109,7 +111,7 @@ function checkFlag(){
     let taskid = document.getElementById("taskName").taskid;
     $.post({
         type: 'post',
-        url: 'http://localhost/api/tasks/checkFlag',
+        url: GLOBAL_ENDPOINT+'/api/tasks/checkFlag',
         data: {flag: flagValue, taskid: taskid},
         success: function(data) {
             console.log(data);

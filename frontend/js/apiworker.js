@@ -1,7 +1,7 @@
 function getinfo() {
     $.post({
         type: 'get',
-        url: 'http://localhost/api/user/info',
+        url: GLOBAL_ENDPOINT+'/api/user/info',
         success: function(data) {
             console.log(data);
 
@@ -26,7 +26,7 @@ function getinfo() {
 
     $.post({
         type: 'get',
-        url: 'http://localhost/api/board/getstats',
+        url: GLOBAL_ENDPOINT+'/api/board/getstats',
         success: function(data) {
             console.log(data);
 

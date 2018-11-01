@@ -46,14 +46,13 @@ func main() {
 	e.POST("/api/auth/register", register) // Register user & Create JWT
 	e.GET("/api/user/:name", userapi.UserInfoByParameter)
 
-	e.GET("/", func (c echo.Context) error {
+	e.GET("/", func(c echo.Context) error {
 		return c.File(executionPath + "/frontend/hello.html")
-	})        // Default page with landing
+	}) // Default page with landing
 
-	e.GET("/login", func (c echo.Context) error {
+	e.GET("/login", func(c echo.Context) error {
 		return c.File(executionPath + "/frontend/login.html")
 	}) // Login/Register page
-
 
 	config := middleware.JWTConfig{
 		Claims:      &common.JwtCustomClaims{},
@@ -64,9 +63,8 @@ func main() {
 	b := e.Group("/board")
 	t := e.Group("/tasks")
 	s := e.Group("/scoreboard")
-	c:= e.Group("/settings")
+	c := e.Group("/settings")
 	api := e.Group("/api")
-
 
 	b.Use(middleware.JWTWithConfig(config))
 	t.Use(middleware.JWTWithConfig(config))
@@ -74,28 +72,31 @@ func main() {
 	c.Use(middleware.JWTWithConfig(config))
 	api.Use(middleware.JWTWithConfig(config))
 
-
-	b.GET("", func (c echo.Context) error { // b /board
+	b.GET("", func(c echo.Context) error { // b /board
 		return c.File(executionPath + "/frontend/board.html")
 	})
 
-	t.GET("", func (c echo.Context) error { // t /tasks
+	t.GET("", func(c echo.Context) error { // t /tasks
 		return c.File(executionPath + "/frontend/tasks.html")
 	})
 
-	s.GET("", func (c echo.Context) error { // s scoreboard
+	s.GET("", func(c echo.Context) error { // s scoreboard
 		return c.File(executionPath + "/frontend/scoreboard.html")
 	})
 
-	c.GET("", func (c echo.Context) error { // c settings
+	c.GET("", func(c echo.Context) error { // c settings
 		return c.File(executionPath + "/frontend/settings.html")
 	})
 
-
-	api.GET("/user/info", userapi.UserInfo) // Get info for logged-in user
+	api.GET("/user/info", userapi.UserInfo)                    // Get info for logged-in user
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
 	api.GET("/users/getTopForContest/:contestid", userapi.GetTopForContest)
-
+	api.POST("/users/ChangePassword", userapi.ChangePassword)
+	api.GET("/users/getCommandStatusForSettings", userapi.GetCommandInfoForSettings)
+	api.GET("/users/LeaveCommand", userapi.LeaveCommand)
+	api.POST("/users/CreateCommand", userapi.CreateCommand)
+	api.POST("/users/RenameCommand", userapi.RenameCommand)
+	api.POST("/users/DeleteCommand", userapi.DeleteCommand)
 
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
 	api.GET("/tasks/getContestList", taskapi.GetContestList)

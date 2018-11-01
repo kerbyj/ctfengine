@@ -1,0 +1,76 @@
+.settingsOption {
+    padding: 15px;
+    vertical-align: top;
+}
+
+.optionName {
+    display: inline-block;
+    width: 300px;
+    color: yellow;
+    vertical-align:top;
+}
+
+.optionName:before{
+    content: "-> ";
+}
+
+.optionPayload {
+    display: inline-block;
+    vertical-align:top;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsInput {
+    width: 300px;
+    padding: 10px;
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 0.9em;
+    /*border-bottom: 1px white solid;*/
+}
+
+.settingsInput:focus{
+    border-bottom: 1px white solid;
+}
+
+.buttonSettings{
+    width: 300px;
+    text-align: center;
+    color: white;
+    border: 1px white solid;
+    padding: 5px 10px;
+    margin-top: 20px;
+}
+
+.buttonSettings:hover{
+    cursor: pointer;
+}
+
+input {
+    margin-top: 5px;
+}
+
+.userTable {
+    display: table;
+    border-collapse: collapse;
+}
+
+.rowUserTable {
+    display: table-row;
+    border-bottom: 1px #00dcff solid;
+}
+
+.rowUserTable:first-child{
+    font-weight: bold;
+}
+
+.rowUserTable:last-child{
+    border-bottom: none;
+}
+
+.cellUserTable {
+    padding: 5px 15px;
+    display: table-cell;
+}

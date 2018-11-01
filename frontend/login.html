@@ -28,6 +28,7 @@
     </span>
 </form>
 </body>
+<script src="js/global.js"></script>
 
 <script>
     var inputData = document.getElementById("inputLoginData");
@@ -75,7 +76,7 @@
 
         $.post({
             type: 'post',
-            url: 'http://localhost/api/auth/login',
+            url: GLOBAL_ENDPOINT+'/api/auth/login',
             contentType:"application/x-www-form-urlencoded; charset=utf-8",
             dataType:"json",
             data:{username:username, password:password},
@@ -100,7 +101,7 @@
 
         $.post({
             type: 'post',
-            url: 'http://localhost/api/auth/register',
+            url: GLOBAL_ENDPOINT+'/api/auth/register',
             contentType:"application/x-www-form-urlencoded; charset=utf-8",
             dataType:"json",
             data:{username:username, password:password, email:email},

@@ -58,8 +58,9 @@
 
     margin: 10% auto; /* 15% from the top and centered */
     width: 80%; /* Could be more or less, depending on screen size */
-    padding: 0px 15px;
+    padding: 15px 15px;
     color: white;
+    background-color: #0b1950;
 }
 
 /* Modal Footer */

@@ -5,6 +5,7 @@
     <title>CTF board</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/settings.css">
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -25,14 +26,36 @@
         </div>
         <div class="stats">
             <div class="block">
-                <h3>Profile</h3>
-                <h3>Command</h3>
-                <h3>Credentials</h3>
+                <div class="settingsOption">
+                    <div class="optionName">ChangePassword</div>
+                    <div class="optionPayload">
+                        <input class="settingsInput" type="password" placeholder="old_password"><br>
+                        <input class="settingsInput" type="password" placeholder="new_password"><br>
+                        <input class="settingsInput" type="password" placeholder="repeat_new_password"><br>
+                        <div class="buttonSettings" id="newpass">Change</div>
+                    </div>
+                </div>
+                <div class="settingsOption">
+                    <div class="optionName">ChangeUsername</div>
+                    <div class="optionPayload">
+                        <input class="settingsInput" type="password" placeholder="new_username"><br>
+                        <div class="buttonSettings" id="newusername">Change</div>
+                    </div>
+                </div>
+                <div class="settingsOption">
+                    <div class="optionName">CommandSettings</div>
+                    <div class="optionPayload" id="commandManipulateContainer">
+                        <div class="userTable" id="userTable">
 
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
     </div>
 </div>
 </body>
+<script src="js/global.js"></script>
+<script src="js/settings.js"></script>
+
 </html>

@@ -3,7 +3,7 @@ var scoreboardContainer = document.getElementById("scoreboardTable");
 function getTopForAllTime(contestId) {
     $.post({
         type: 'get',
-        url: 'http://localhost/api/users/getTopForContest/'+contestId,
+        url: GLOBAL_ENDPOINT+'/api/users/getTopForContest/'+contestId,
         success: function(data) {
             console.log(data);
             let scoreboard = document.getElementById("scoreboard");
@@ -34,7 +34,7 @@ function selectContest(){
 function drawContests(){
     $.post({
         type: 'get',
-        url: 'http://localhost/api/tasks/getContestList',
+        url: GLOBAL_ENDPOINT+'/api/tasks/getContestList',
         success: function(data) {
             console.log(data);
             let contests = document.getElementById("contests");
