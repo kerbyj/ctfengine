@@ -97,6 +97,8 @@ func main() {
 	api.POST("/users/CreateCommand", userapi.CreateCommand)
 	api.POST("/users/RenameCommand", userapi.RenameCommand)
 	api.POST("/users/DeleteCommand", userapi.DeleteCommand)
+	api.POST("/users/DropUserFromCommand", userapi.DropUserFromCommand)
+	api.POST("/users/JoinCommandViaInvite", userapi.JoinCommandViaInvite)
 
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
 	api.GET("/tasks/getContestList", taskapi.GetContestList)

@@ -4,10 +4,10 @@ import (
 	"crypto/md5"
 	"ctfEngine/backend/common"
 	"ctfEngine/backend/database"
+	"encoding/hex"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -216,12 +216,17 @@ func ChangePassword(c echo.Context) error {
 	getPasswordForUser.Scan(&passwordFromDb)
 
 	var hashOldPass = md5.New()
-	io.WriteString(hashOldPass, oldPassword)
+	hashOldPass.Write([]byte(oldPassword))
+	var oldPassHashString = hex.EncodeToString(hashOldPass.Sum(nil))
 
-	if passwordFromDb == string(hashOldPass.Sum(nil)) {
+	if passwordFromDb == oldPassHashString {
 		var hashForNewPassword = md5.New()
-		io.WriteString(hashForNewPassword, newPassword)
-		var _, errorUpdatePassword = database.DB.Query("UPDATE users SET password=? WHERE id=?", string(hashForNewPassword.Sum(nil)), id)
+		//io.WriteString(hashForNewPassword, newPassword)
+		hashForNewPassword.Write([]byte(newPassword))
+		var hashForNewPasswordString = hex.EncodeToString(hashForNewPassword.Sum(nil))
+
+
+		var _, errorUpdatePassword = database.DB.Query("UPDATE users SET password=? WHERE id=?", hashForNewPasswordString, id)
 		if errorUpdatePassword != nil {
 			return c.JSON(http.StatusOK, map[string]string{
 				"status": "error",
@@ -246,7 +251,7 @@ func GetCommandInfoForSettings(c echo.Context) error {
 	claims := user.Claims.(*common.JwtCustomClaims)
 	id := claims.UserId
 
-	var requestCommandId, errorGetCommandId = database.DB.Query("select commandid, command.captainid, command.name from users left join command on users.commandid = command.id where users.id=?", id)
+	var requestCommandId, errorGetCommandId = database.DB.Query("select commandid, command.captainid, command.name, command.invite from users left join command on users.commandid = command.id where users.id=?", id)
 	if errorGetCommandId != nil {
 		log.Println(errorGetCommandId, "on id", id)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -256,11 +261,11 @@ func GetCommandInfoForSettings(c echo.Context) error {
 	}
 
 	var (
-		commandId, captainId int
-		commandName          string
+		commandId, captainId       int
+		commandName, commandInvite string
 	)
 	requestCommandId.Next()
-	requestCommandId.Scan(&commandId, &captainId, &commandName)
+	requestCommandId.Scan(&commandId, &captainId, &commandName, &commandInvite)
 
 	if commandId == 0 {
 		return c.JSON(http.StatusOK, map[string]int{
@@ -283,11 +288,12 @@ func GetCommandInfoForSettings(c echo.Context) error {
 		)
 
 		type commandDataOut struct {
-			YourId      int            `json:"your_id"`
-			CaptainId   int            `json:"captain_id"`
-			CommandId   int            `json:"command_id"`
-			CommandName string         `json:"command_name"`
-			Members     map[int]string `json:"members"`
+			YourId        int            `json:"your_id"`
+			CaptainId     int            `json:"captain_id"`
+			CommandId     int            `json:"command_id"`
+			CommandName   string         `json:"command_name"`
+			CommandInvite string         `json:"command_invite"`
+			Members       map[int]string `json:"members"`
 		}
 
 		for getCommandList.Next() {
@@ -296,11 +302,12 @@ func GetCommandInfoForSettings(c echo.Context) error {
 		}
 
 		return c.JSON(http.StatusOK, commandDataOut{
-			YourId:      id,
-			CaptainId:   captainId,
-			CommandId:   commandId,
-			CommandName: commandName,
-			Members:     memberList,
+			YourId:        id,
+			CaptainId:     captainId,
+			CommandId:     commandId,
+			CommandName:   commandName,
+			Members:       memberList,
+			CommandInvite: commandInvite,
 		})
 	}
 }
@@ -447,6 +454,89 @@ func DeleteCommand(c echo.Context) error {
 	database.DB.Query("update users set commandid=0 where commandid=?", commandId)
 	database.DB.Query("delete from command where id=?", commandId)
 
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "success",
+	})
+}
+
+func DropUserFromCommand(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*common.JwtCustomClaims)
+	id := claims.UserId
+
+	var requestedUserForDelete = c.FormValue("userid")
+
+	var checkCaptainId, errorCheckCaptainId = database.DB.Query("select id, count(*) from command where captainid=?", id)
+	if errorCheckCaptainId != nil {
+		log.Println(errorCheckCaptainId)
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+		})
+	}
+
+	var commandId, checkCount, currentUserCommand int
+
+	checkCaptainId.Next()
+	checkCaptainId.Scan(&commandId, &checkCount)
+
+	if checkCount == 0 {
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+			"error":  "you are not captain",
+		})
+	}
+
+	var checkCurrentCommand, errorCheckCurrentCommand = database.DB.Query("select commandid from users where id=?", requestedUserForDelete)
+	if errorCheckCurrentCommand != nil {
+		log.Println(errorCheckCurrentCommand)
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+		})
+	}
+
+	checkCurrentCommand.Next()
+	checkCurrentCommand.Scan(&currentUserCommand)
+
+	if currentUserCommand != commandId {
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+			"error":  "kysh otsyda",
+		})
+	}
+
+	database.DB.Query("update users set commandid=0 where id=?", requestedUserForDelete)
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "success",
+	})
+}
+
+func JoinCommandViaInvite(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*common.JwtCustomClaims)
+	id := claims.UserId
+
+	var inviteCode = c.FormValue("invite")
+	var getCommandCreds, errorGetCommandCreds = database.DB.Query("select id, count(*) from command where invite=?", inviteCode)
+	if errorGetCommandCreds != nil {
+		log.Println(errorGetCommandCreds)
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+		})
+	}
+
+	var commandId, countCommandCheck int
+	getCommandCreds.Next()
+	getCommandCreds.Scan(&commandId, &countCommandCheck)
+
+	if countCommandCheck != 1{
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+			"error": "bad invite link",
+		})
+	}
+
+	database.DB.Query("UPDATE users SET commandid=? WHERE id=?", commandId, id)
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",
 	})

@@ -24,3 +24,7 @@ func CreateCookie(name string, value string, httpOnly bool, path string) *http.C
 
 	return cookie
 }
+
+const (
+	JWT_AUTH_KEY = "user"
+)

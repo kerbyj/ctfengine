@@ -1,5 +1,26 @@
 function changePassword() {
+    let oldPassword = document.getElementById("oldPass").value;
+    let newPassword1 = document.getElementById("newPass1").value;
+    let newPassword2 = document.getElementById("newPass2").value;
 
+    if(newPassword1 !== newPassword2){
+        console.log("Пароли не совпадают");
+        return;
+    }
+
+    $.post({
+        type: 'post',
+        url: GLOBAL_ENDPOINT + '/api/users/ChangePassword',
+        data: {oldPassword: oldPassword, newPassword:newPassword1},
+        success: function (data) {
+            console.log(data);
+            if (data.status === "success")
+                location.reload();
+            else
+                alert("some error");
+
+        }
+    });
 }
 
 function LeaveCommand() {
@@ -53,7 +74,7 @@ function RenameCommand() {
 }
 
 function DeleteCommand() {
-    console.log(this.command_id)
+    //console.log(this.command_id);
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/DeleteCommand',
@@ -73,7 +94,7 @@ function drawMembers() {
     let commandManipulateContainer = document.getElementById("commandManipulateContainer");
 
     let commandInfo = document.createElement("div");
-    commandInfo.innerHTML = `Command name: <b>${this.command_name}</b><p>`;
+    commandInfo.innerHTML = `Command name: <b>${this.command_name}</b><br>Command invite: <b>${this.command_invite}</b><p>`;
 
     commandManipulateContainer.prepend(commandInfo);
 
@@ -83,7 +104,6 @@ function drawMembers() {
 
     mainUserTable.innerHTML = `<div class="rowUserTable"><div class="cellUserTable">Username</div>
                                 <div class="cellUserTable">Status</div>
-                                ${captainId == yourId ? `<div class="cellUserTable">Function</div>` : ""}
                                 <div> `;
 
 
@@ -92,18 +112,46 @@ function drawMembers() {
         let userRow = document.createElement("div");
         userRow.classList.add("rowUserTable");
 
-        let rowInnerData = `<div class="cellUserTable">${element}</div>`;
+        let usernameContainer = document.createElement("div");
+        usernameContainer.classList.add("cellUserTable");
+        usernameContainer.innerText = element;
+        userRow.appendChild(usernameContainer);
 
-        rowInnerData += `<div class="cellUserTable">${captainId == key ? "Captain" : yourId == key ? "You" : ""}</div>`;
+        let statusContainer = document.createElement("div");
+        statusContainer.classList.add("cellUserTable");
+        statusContainer.innerText = captainId == key ? "Captain" : yourId == key ? "You" : "";
+        userRow.appendChild(statusContainer);
 
+        /*
         if (captainId === yourId) {
-            rowInnerData += `<div class="cellUserTable">Drop</div>`
+            let dropButtonContainer = document.createElement("div");
+            dropButtonContainer.classList.add("cellUserTable");
+            dropButtonContainer.innerText = "Drop";
+            dropButtonContainer.addEventListener("click");
+            userRow.appendChild(dropButtonContainer);
         }
+        */
 
-        userRow.innerHTML = rowInnerData;
         mainUserTable.appendChild(userRow);
     });
 
+}
+
+function JoinCommand(){
+    let invite = document.getElementById("inviteInput").value;
+    $.post({
+        type: 'post',
+        url: GLOBAL_ENDPOINT + '/api/users/JoinCommandViaInvite',
+        data: {invite: invite},
+        success: function (data) {
+            console.log(data);
+            if (data.status === "success")
+                location.reload();
+            else
+                alert("some error");
+
+        }
+    });
 }
 
 function drawManipulateForms() {
@@ -134,6 +182,7 @@ function drawManipulateForms() {
          */
         let tokenInput = document.createElement("input");
         tokenInput.placeholder = "invite_token";
+        tokenInput.id = "inviteInput";
         tokenInput.classList.add("settingsInput");
         tokenInput.style.marginTop = "25px";
         tokenInput.type = "text";
@@ -141,7 +190,7 @@ function drawManipulateForms() {
 
         let JoinCommandButton = document.createElement("div");
         JoinCommandButton.classList.add("buttonSettings");
-
+        JoinCommandButton.addEventListener("click", JoinCommand);
         JoinCommandButton.innerText = "./join_command";
         mainCommandContainer.appendChild(JoinCommandButton);
 
@@ -213,4 +262,4 @@ function getCommandInfo() {
 }
 
 window.onload = getCommandInfo();
-
+document.getElementById("newpassButton").addEventListener("click", changePassword);
