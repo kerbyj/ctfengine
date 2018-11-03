@@ -8,6 +8,9 @@ import (
 	"ctfEngine/backend/userapi"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"net/http"
+	"time"
+
 	//_ "github.com/mattn/go-sqlite3"
 	"os"
 	"path/filepath"
@@ -16,6 +19,19 @@ import (
 var (
 	executionPath string
 )
+
+func customHTTPErrorHandler(err error, c echo.Context) {
+	code := http.StatusInternalServerError
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+	}
+
+	if code == 400 {
+		c.HTML(http.StatusOK, "<script>location.replace('/login')</script>")
+	} else {
+		c.HTML(http.StatusOK, "<script>location.replace('/')</script>")
+	}
+}
 
 func main() {
 	ex, err := os.Executable()
@@ -34,12 +50,15 @@ func main() {
 	// Middleware
 	//e.Use(middleware.Logger())
 	//e.Use(middleware.Secure())
+	//e.Pre(middleware.HTTPSRedirect())
+
+	e.HTTPErrorHandler = customHTTPErrorHandler
 
 	/*
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
-		AllowMethods: []string{echo.GET, echo.POST},
-	}))
+		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
+			AllowMethods: []string{echo.GET, echo.POST},
+		}))
 	*/
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
@@ -53,6 +72,12 @@ func main() {
 	e.GET("/login", func(c echo.Context) error {
 		return c.File(executionPath + "/frontend/login.html")
 	}) // Login/Register page
+
+	e.GET("/logout", func(c echo.Context) error {
+		c.SetCookie(common.CreateCookie("token", "", true, "/", time.Date(2000, 1, 1, 12, 0, 0, 0, time.UTC)))
+
+		return c.HTML(http.StatusOK, "<script>location.replace('/login')</script>") // TODO not work properly
+	})
 
 	config := middleware.JWTConfig{
 		Claims:      &common.JwtCustomClaims{},
@@ -92,6 +117,8 @@ func main() {
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
 	api.GET("/users/getTopForContest/:contestid", userapi.GetTopForContest)
 	api.POST("/users/ChangePassword", userapi.ChangePassword)
+	api.POST("/users/ChangeUsername", userapi.ChangeUsername)
+
 	api.GET("/users/getCommandStatusForSettings", userapi.GetCommandInfoForSettings)
 	api.GET("/users/LeaveCommand", userapi.LeaveCommand)
 	api.POST("/users/CreateCommand", userapi.CreateCommand)

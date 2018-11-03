@@ -23,6 +23,23 @@ function changePassword() {
     });
 }
 
+function changeUsername() {
+    let newName = document.getElementById("newusernameInput").value;
+
+    $.post({
+        type: 'post',
+        url: GLOBAL_ENDPOINT + '/api/users/ChangeUsername',
+        data: {newName: newName},
+        success: function (data) {
+            console.log(data);
+            if (data.status === "success")
+                location.reload();
+            else
+                alert("some error");
+        }
+    });
+}
+
 function LeaveCommand() {
     $.post({
         type: 'get',
@@ -263,3 +280,8 @@ function getCommandInfo() {
 
 window.onload = getCommandInfo();
 document.getElementById("newpassButton").addEventListener("click", changePassword);
+document.getElementById("newusername").addEventListener("click", changeUsername);
+
+document.getElementById("logoutButton").addEventListener("click", function () {
+    location.replace("/logout");
+});

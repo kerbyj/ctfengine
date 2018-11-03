@@ -195,6 +195,38 @@ func GetTopForContest(c echo.Context) error {
 	//return c.String(http.StatusOK, "Ooops. We have a problem")
 }
 
+func ChangeUsername(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*common.JwtCustomClaims)
+	id := claims.UserId
+
+	var (
+		newName = c.FormValue("newName")
+
+		countName int
+	)
+
+	var getCountForUsername, errorGetCountForUsername = database.DB.Query("SELECT count(*) FROM users WHERE username=?", newName)
+	if errorGetCountForUsername != nil {
+		log.Println(errorGetCountForUsername, "for", id)
+		return c.String(http.StatusServiceUnavailable, "Ooops")
+	}
+	getCountForUsername.Next()
+	getCountForUsername.Scan(&countName)
+
+	if countName == 1 {
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+			"error":  "the name is already taken",
+		})
+	}
+
+	database.DB.Query("update users set username=? where id=?", newName, id)
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "success",
+	})
+}
+
 func ChangePassword(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*common.JwtCustomClaims)
@@ -224,7 +256,6 @@ func ChangePassword(c echo.Context) error {
 		//io.WriteString(hashForNewPassword, newPassword)
 		hashForNewPassword.Write([]byte(newPassword))
 		var hashForNewPasswordString = hex.EncodeToString(hashForNewPassword.Sum(nil))
-
 
 		var _, errorUpdatePassword = database.DB.Query("UPDATE users SET password=? WHERE id=?", hashForNewPasswordString, id)
 		if errorUpdatePassword != nil {
@@ -529,10 +560,10 @@ func JoinCommandViaInvite(c echo.Context) error {
 	getCommandCreds.Next()
 	getCommandCreds.Scan(&commandId, &countCommandCheck)
 
-	if countCommandCheck != 1{
+	if countCommandCheck != 1 {
 		return c.JSON(http.StatusOK, map[string]string{
 			"status": "error",
-			"error": "bad invite link",
+			"error":  "bad invite link",
 		})
 	}
 

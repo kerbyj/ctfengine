@@ -59,7 +59,7 @@ func login(c echo.Context) error {
 			return err
 		}
 
-		c.SetCookie(common.CreateCookie("token", t, true, "/"))
+		c.SetCookie(common.CreateCookie("token", t, true, "/", time.Now().Add(12*time.Hour)))
 
 		return c.JSON(http.StatusOK, "ok")
 	}
@@ -113,7 +113,7 @@ func register(c echo.Context) error {
 		return err
 	}
 
-	c.SetCookie(common.CreateCookie("token", t, true, "/"))
+	c.SetCookie(common.CreateCookie("token", t, true, "/", time.Now().Add(12*time.Hour)))
 
 	return c.JSON(http.StatusOK, "ok")
 }
