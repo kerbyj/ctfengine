@@ -10,7 +10,7 @@ function getTopForAllTime(contestId) {
             //scoreboard.innerHTML = "";
             scoreboard.innerHTML = `<div class="oneRow">
                         <div class="oneCell rank"></div>
-                        <div class="oneCell username">USERNAME</div>
+                        <div class="oneCell username">NAME</div>
                         <div class="oneCell score">SCORE</div>
                         <div class="oneCell solvedTasks">SOLVED TASKS</div>
                     </div>`;

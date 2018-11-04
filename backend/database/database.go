@@ -22,6 +22,8 @@ func LoadDB(executionPath string) {
 		checkErr(err)
 	*/
 	db, err := sql.Open("mysql", "root:root@/ctfengine")
+	log.Println(err)
+
 	if err != nil {
 		log.Panic(err)
 	}

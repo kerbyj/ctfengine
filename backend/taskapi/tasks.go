@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
+	"time"
 )
 
 type contestStruct struct {
@@ -149,23 +150,26 @@ func CheckFlag(c echo.Context) error {
 	userid := claims.UserId
 
 	var userCommandId int
-	var getCommandId, _ = database.DB.Query("SELECT commandid FROM users WHERE id=?", userid)
-	getCommandId.Next()
-	getCommandId.Scan(&userCommandId)
+	var username string
 
-	var getRightAnswer, errGetTaskAnswer = database.DB.Query("SELECT flag, value, contestid, type FROM tasks left join contests on tasks.contestid = contests.id where tasks.id=?", taskId)
+	var getCommandId, _ = database.DB.Query("SELECT username, commandid FROM users WHERE id=?", userid)
+	getCommandId.Next()
+	getCommandId.Scan(&username, &userCommandId)
+
+	var getRightAnswer, errGetTaskAnswer = database.DB.Query("SELECT flag, value, contestid, type, tasks.name FROM tasks left join contests on tasks.contestid = contests.id where tasks.id=?", taskId)
 
 	if errGetTaskAnswer != nil {
+		log.Println(errGetTaskAnswer)
 		return c.JSON(http.StatusServiceUnavailable, errGetTaskAnswer)
 	}
 
 	// Right answer for check and point if a true flag was submitted
 	var (
-		rightAnswer, contestType string
+		rightAnswer, contestType, taskName string
 		points, contestid        int
 	)
 	getRightAnswer.Next()
-	getRightAnswer.Scan(&rightAnswer, &points, &contestid, &contestType)
+	getRightAnswer.Scan(&rightAnswer, &points, &contestid, &contestType, &taskName)
 
 	var pwnedStatus int
 	var (
@@ -173,7 +177,7 @@ func CheckFlag(c echo.Context) error {
 		errCheckPwned error
 	)
 
-	//log.Println(contestType)
+	log.Println(contestType)
 
 	if contestType == "alone" {
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE userid=? AND taskid=?", userid, taskId)
@@ -209,10 +213,12 @@ func CheckFlag(c echo.Context) error {
 
 		if contestType == "alone" {
 
+			log.Println(username, "sent the correct flag(", flag, ") for task", taskId, taskName, "in", time.Now())
 			var checkExistInRatingTable, errCheckExist = database.DB.Query("SELECT COUNT(*) FROM rating WHERE contest_id = ? and userid = ? ", contestid, userid)
 			if errCheckExist != nil {
 				log.Println(errCheckExist)
 			}
+
 			var existStatus int
 			checkExistInRatingTable.Next()
 			checkExistInRatingTable.Scan(&existStatus)
@@ -222,8 +228,16 @@ func CheckFlag(c echo.Context) error {
 			} else {
 				database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND userid=?", points, contestid, userid)
 			}
+			database.DB.Query("UPDATE users SET `flagright`=`flagright`+1 WHERE id=?", userid)
 
 		} else if contestType == "team" {
+			var commandName string
+			var getCommandName, _ = database.DB.Query("SELECT name from command where id=?", userCommandId)
+			getCommandName.Next()
+			getCommandName.Scan(&commandName)
+
+			log.Println(commandName, "sent the correct flag(", flag, ") for task", taskId, taskName, "in", time.Now())
+
 			var checkExistInRatingTable, errCheckExist = database.DB.Query("SELECT COUNT(*) FROM rating WHERE contest_id = ? and team = ? ", contestid, userCommandId)
 			if errCheckExist != nil {
 				log.Println(errCheckExist)

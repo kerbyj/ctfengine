@@ -6,6 +6,7 @@ import (
 	"ctfEngine/backend/database"
 	"ctfEngine/backend/taskapi"
 	"ctfEngine/backend/userapi"
+	"ctfengine/backend/admin"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"net/http"
@@ -89,12 +90,14 @@ func main() {
 	t := e.Group("/tasks")
 	s := e.Group("/scoreboard")
 	c := e.Group("/settings")
+	adm := e.Group("/admin")
 	api := e.Group("/api")
 
 	b.Use(middleware.JWTWithConfig(config))
 	t.Use(middleware.JWTWithConfig(config))
 	s.Use(middleware.JWTWithConfig(config))
 	c.Use(middleware.JWTWithConfig(config))
+	adm.Use(middleware.JWTWithConfig(config))
 	api.Use(middleware.JWTWithConfig(config))
 
 	b.GET("", func(c echo.Context) error { // b /board
@@ -112,6 +115,8 @@ func main() {
 	c.GET("", func(c echo.Context) error { // c settings
 		return c.File(executionPath + "/frontend/settings.html")
 	})
+
+	adm.GET("", admin.CheckRights)
 
 	api.GET("/user/info", userapi.UserInfo)                    // Get info for logged-in user
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
