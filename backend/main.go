@@ -48,6 +48,10 @@ func main() {
 	e.Static("/css", executionPath+"/frontend/css")
 	e.Static("/js", executionPath+"/frontend/js")
 
+	var files = e.Group("/files/")
+	fs := http.FileServer(http.Dir(executionPath+"/files/"))
+	files.GET("*", echo.WrapHandler(http.StripPrefix("/files", fs)))
+
 	// Middleware
 	//e.Use(middleware.Logger())
 	//e.Use(middleware.Secure())
@@ -116,7 +120,9 @@ func main() {
 		return c.File(executionPath + "/frontend/settings.html")
 	})
 
-	adm.GET("", admin.CheckRights)
+	adm.GET("", admin.MainPage)
+	adm.POST("/createContest", admin.CreateContest)
+	adm.POST("/createTask", admin.CreateTask)
 
 	api.GET("/user/info", userapi.UserInfo)                    // Get info for logged-in user
 	api.GET("/users/topForAllTime", userapi.TopUserForAlltime) // For scoreboard
@@ -135,6 +141,7 @@ func main() {
 	api.GET("/tasks/getAlwaysAliveTasks", taskapi.GetAlwaysAliveTasks) //
 	api.GET("/tasks/getContestList", taskapi.GetContestList)
 	api.GET("/tasks/getTaskById/:id", taskapi.GetTaskById)
+	api.GET("/tasks/getFile/:id", taskapi.GetTaskById)
 	api.POST("/tasks/checkFlag", taskapi.CheckFlag)
 	//api.GET("/tasks/GetContestTasks", )
 

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CTF board</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/settings.css">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div id="mainWrapper">
+    <div id="container">
+        <div class="bar">
+            <span class="option">
+                <a href="/board">Main</a></span>
+            <span class="option">
+                <a href="/tasks">Tasks</a></span>
+            <span class="option">
+                <a href="/scoreboard">Scoreboard</a></span>
+            <span class="option current">
+                    <a href="/settings" class="currentPage">Settings</a></span>
+        </div>
+        <div class="stats">
+            <div class="block">
+                <div class="settingsOption">
+                    <div class="optionName">create_task</div>
+                    <div class="optionPayload" id="commandManipulateContainer">
+                        <div class="userTable" id="userTable">
+                            <select class="tasksList" id="createTaskContestList">
+                                <option selected>Select contest</option>
+                            </select><br>
+                            <input class="settingsInput" id="task_name" type="text" placeholder="task_name">
+                            <input class="settingsInput" id="task_flag" type="text" placeholder="flag"><br>
+                            <input class="settingsInput" id="task_price" type="text" placeholder="price">
+                            <input class="settingsInput" id="task_category" type="text" placeholder="category"><br>
+
+                            <textarea id="task_description" style="width: 600px;height: 50px; background:transparent; color: white" placeholder="Description..."></textarea><br>
+                            <div class="buttonSettings" id="newtaskButton">Create</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!---
+                <div class="settingsOption">
+                    <div class="optionName">edit_task</div>
+                    <div class="optionPayload">
+                        <input class="settingsInput" id="oldPass" type="password" placeholder="old_password"><br>
+                        <input class="settingsInput" id="newPass1" type="password" placeholder="new_password"><br>
+                        <input class="settingsInput" id="newPass2" type="password"
+                               placeholder="repeat_new_password"><br>
+                        <div class="buttonSettings" id="newpassButton">Change</div>
+                    </div>
+                </div>
+                --->
+                <div class="settingsOption">
+                    <div class="optionName">create_contest</div>
+                    <div class="optionPayload">
+                        <input class="settingsInput" id="contest_name" type="text" placeholder="contest_name">
+                        <input class="settingsInput" id="contest_type" type="text" placeholder="type (alone|team)"><br>
+                        Visibility<input type="checkbox" id="contest_visibility" checked><br>
+                        Permit<input type="checkbox" id="contest_permit" checked>
+
+                        <div class="buttonSettings" id="newcontestButton">Create</div>
+                    </div>
+                </div>
+                <div class="settingsOption">
+                    <div class="optionName">edit_contest</div>
+                    <div class="optionPayload" id="commandManipulateContainer">
+                        <div class="userTable" id="userTable">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="settingsOption">
+                    <div class="optionName" id="logoutButton">Logout</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/global.js"></script>
+<script src="js/admin.js"></script>
+
+</html>

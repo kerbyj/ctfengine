@@ -18,7 +18,7 @@ func UserInfo(c echo.Context) error {
 	claims := user.Claims.(*common.JwtCustomClaims)
 	id := claims.UserId
 
-	var request, error = database.DB.Query("SELECT COUNT(*), username, IFNULL((SELECT sum(points) FROM ctfengine.rating where userid=2 and team = 0), 0), ROUND(flagfalse/(flagfalse+flagright), 2) as bff, commandid FROM users where id = ?", id)
+	var request, error = database.DB.Query("SELECT COUNT(*), username, IFNULL((SELECT sum(points) FROM ctfengine.rating where userid=2 and team = 0), 0), IFNULL(ROUND(flagfalse/(flagfalse+flagright), 2), 0) as bff, commandid FROM users where id = ?", id)
 
 	if error != nil {
 		log.Println(error)

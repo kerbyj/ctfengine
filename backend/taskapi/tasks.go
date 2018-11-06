@@ -141,6 +141,32 @@ func GetTaskById(c echo.Context) error {
 	return c.JSON(http.StatusOK, dataOut)
 }
 
+func GetFileById(c echo.Context) error {
+	var requestedTask = c.Param("id")
+	var request, errGetTask = database.DB.Query("select ", requestedTask)
+
+	if errGetTask != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+
+	var value, id int
+	var name, description, category, contest string
+
+	request.Next()
+	request.Scan(&id, &name, &value, &description, &category, &contest)
+
+	var dataOut = map[string]string{
+		"id":          strconv.Itoa(id),
+		"name":        name,
+		"value":       strconv.Itoa(value),
+		"description": description,
+		"category":    category,
+		"contest":     contest,
+	}
+
+	return c.JSON(http.StatusOK, dataOut)
+}
+
 func CheckFlag(c echo.Context) error {
 	var flag = c.FormValue("flag")
 	var taskId = c.FormValue("taskid")
@@ -156,7 +182,7 @@ func CheckFlag(c echo.Context) error {
 	getCommandId.Next()
 	getCommandId.Scan(&username, &userCommandId)
 
-	var getRightAnswer, errGetTaskAnswer = database.DB.Query("SELECT flag, value, contestid, type, tasks.name FROM tasks left join contests on tasks.contestid = contests.id where tasks.id=?", taskId)
+	var getRightAnswer, errGetTaskAnswer = database.DB.Query("SELECT flag, value, contestid, type, tasks.name, contests.permit FROM tasks left join contests on tasks.contestid = contests.id where tasks.id=?", taskId)
 
 	if errGetTaskAnswer != nil {
 		log.Println(errGetTaskAnswer)
@@ -166,10 +192,17 @@ func CheckFlag(c echo.Context) error {
 	// Right answer for check and point if a true flag was submitted
 	var (
 		rightAnswer, contestType, taskName string
-		points, contestid        int
+		points, contestid, permit        int
 	)
 	getRightAnswer.Next()
-	getRightAnswer.Scan(&rightAnswer, &points, &contestid, &contestType, &taskName)
+	getRightAnswer.Scan(&rightAnswer, &points, &contestid, &contestType, &taskName, &permit)
+
+	if permit == 0 {
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "error",
+			"error": "time over",
+		})
+	}
 
 	var pwnedStatus int
 	var (
@@ -177,7 +210,7 @@ func CheckFlag(c echo.Context) error {
 		errCheckPwned error
 	)
 
-	log.Println(contestType)
+	//log.Println(contestType)
 
 	if contestType == "alone" {
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE userid=? AND taskid=?", userid, taskId)

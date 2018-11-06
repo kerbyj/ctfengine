@@ -47,7 +47,7 @@ func main() {
 						command_id INT UNSIGNED NULL,
 						taskid INT UNSIGNED NULL,
 						contestid INT UNSIGNED NULL,
-						time DATE DEFAULT NOW() NOT NULL;
+						time DATE DEFAULT NOW() NOT NULL
 					)
 					ENGINE=InnoDB
 					DEFAULT CHARSET=utf8
@@ -124,6 +124,7 @@ func main() {
 							name varchar(100) NULL,
 							type varchar(100) NULL,
 							visibility BOOL DEFAULT 1 NOT NULL,
+							permit BOOL DEFAULT 1 NOT NULL,
 							CONSTRAINT contests_pk PRIMARY KEY (id)
 						)
 						ENGINE=InnoDB
@@ -135,5 +136,18 @@ func main() {
 		log.Println(errCreateContests)
 	} else {
 		log.Println("Contests DB created")
+	}
+
+	_, errCreateAttachments := db.Query(`CREATE TABLE attachments(
+    							id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+   								taskid int,
+    							name varchar(100)
+							);
+		  				`)
+
+	if errCreateAttachments != nil {
+		log.Println(errCreateAttachments)
+	} else {
+		log.Println("Attachments DB created")
 	}
 }
