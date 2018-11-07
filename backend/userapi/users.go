@@ -38,6 +38,8 @@ func UserInfo(c echo.Context) error {
 		commandName = "no command :("
 	} else {
 		var requestCommandName, errGetCommand = database.DB.Query("SELECT name, captainid FROM command WHERE id=?", command)
+		defer requestCommandName.Close()
+
 		if errGetCommand != nil {
 			log.Println(errGetCommand)
 		}
@@ -94,6 +96,8 @@ type TopUserOut struct {
 
 func TopUserForAlltime(c echo.Context) error {
 	var request, errorGetTop = database.DB.Query("SELECT users.id, username, points, command.name FROM users left join command on users.commandid = command.id ORDER BY points DESC LIMIT 50")
+	defer request.Close()
+
 
 	if errorGetTop != nil {
 		log.Print(errorGetTop)
@@ -126,6 +130,8 @@ func TopUserForAlltime(c echo.Context) error {
 func GetTopForContest(c echo.Context) error {
 	var requestedContest = c.Param("contestid")
 	var checkContestExist, errorCheckContest = database.DB.Query("SELECT COUNT(*), name, type FROM contests WHERE id=?", requestedContest)
+	defer checkContestExist.Close()
+
 	if errorCheckContest != nil {
 		log.Println(errorCheckContest)
 		return c.String(http.StatusOK, "Ooops. We have a problem in checkContestExist")
@@ -167,6 +173,7 @@ func GetTopForContest(c echo.Context) error {
 
 	}
 	var getTopForContest, errGetTopForContest = database.DB.Query(requestQuery, requestedContest, requestedContest, requestedContest)
+	defer getTopForContest.Close()
 
 	if errGetTopForContest != nil {
 		log.Println(errorCheckContest)
@@ -209,6 +216,8 @@ func ChangeUsername(c echo.Context) error {
 	)
 
 	var getCountForUsername, errorGetCountForUsername = database.DB.Query("SELECT count(*) FROM users WHERE username=?", newName)
+	defer getCountForUsername.Close()
+
 	if errorGetCountForUsername != nil {
 		log.Println(errorGetCountForUsername, "for", id)
 		return c.String(http.StatusServiceUnavailable, "Ooops")
@@ -223,7 +232,9 @@ func ChangeUsername(c echo.Context) error {
 		})
 	}
 
-	database.DB.Query("update users set username=? where id=?", newName, id)
+	var cc, _ = database.DB.Query("update users set username=? where id=?", newName, id)
+	cc.Close()
+
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",
 	})
@@ -242,6 +253,8 @@ func ChangePassword(c echo.Context) error {
 	)
 
 	var getPasswordForUser, errorGetPassword = database.DB.Query("SELECT password FROM users WHERE id=?", id)
+	defer getPasswordForUser.Close()
+
 	if errorGetPassword != nil {
 		log.Println(errorGetPassword, "for", id)
 		return c.String(http.StatusServiceUnavailable, "Ooops")
@@ -259,7 +272,9 @@ func ChangePassword(c echo.Context) error {
 		hashForNewPassword.Write([]byte(newPassword))
 		var hashForNewPasswordString = hex.EncodeToString(hashForNewPassword.Sum(nil))
 
-		var _, errorUpdatePassword = database.DB.Query("UPDATE users SET password=? WHERE id=?", hashForNewPasswordString, id)
+		var updatePassword, errorUpdatePassword = database.DB.Query("UPDATE users SET password=? WHERE id=?", hashForNewPasswordString, id)
+		defer updatePassword.Close()
+
 		if errorUpdatePassword != nil {
 			return c.JSON(http.StatusOK, map[string]string{
 				"status": "error",
@@ -285,6 +300,8 @@ func GetCommandInfoForSettings(c echo.Context) error {
 	id := claims.UserId
 
 	var requestCommandId, errorGetCommandId = database.DB.Query("select commandid, command.captainid, command.name, command.invite from users left join command on users.commandid = command.id where users.id=?", id)
+	defer requestCommandId.Close()
+
 	if errorGetCommandId != nil {
 		log.Println(errorGetCommandId, "on id", id)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -306,6 +323,8 @@ func GetCommandInfoForSettings(c echo.Context) error {
 		})
 	} else {
 		var getCommandList, errorGetCommandList = database.DB.Query("select id, username from users where commandid=?", commandId)
+		defer getCommandList.Close()
+
 		if errorGetCommandList != nil {
 			log.Println(errorGetCommandList)
 			return c.JSON(http.StatusOK, map[string]string{
@@ -350,7 +369,9 @@ func LeaveCommand(c echo.Context) error {
 	claims := user.Claims.(*common.JwtCustomClaims)
 	id := claims.UserId
 
-	var _, errorDeleteCommand = database.DB.Query("UPDATE users SET commandid = 0 WHERE id = ?", id)
+	var DeleteCommand, errorDeleteCommand = database.DB.Query("UPDATE users SET commandid = 0 WHERE id = ?", id)
+	defer DeleteCommand.Close()
+
 	if errorDeleteCommand != nil {
 		log.Println(errorDeleteCommand, "for", id)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -370,6 +391,8 @@ func CreateCommand(c echo.Context) error {
 	var commandName = c.FormValue("commandname")
 
 	var checkNameExist, errorCheckNameExist = database.DB.Query("select (select count(*) from command where name = ?), (select commandid from users where id=?)", commandName, id)
+	defer checkNameExist.Close()
+
 	if errorCheckNameExist != nil {
 		log.Println(errorCheckNameExist, "for", commandName)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -393,7 +416,9 @@ func CreateCommand(c echo.Context) error {
 		})
 	}
 
-	var _, errorCreateCommand = database.DB.Query("INSERT into command (name, captainid) VALUES (?, ?)", commandName, id)
+	var CreateCommand, errorCreateCommand = database.DB.Query("INSERT into command (name, captainid) VALUES (?, ?)", commandName, id)
+	defer CreateCommand.Close()
+
 	if errorCreateCommand != nil {
 		log.Println(errorCreateCommand, "for", commandName, id)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -406,10 +431,14 @@ func CreateCommand(c echo.Context) error {
 	)
 
 	var commandIdRequest, _ = database.DB.Query("select id from command where captainid=?", id)
+	defer commandIdRequest.Close()
+
 	commandIdRequest.Next()
 	commandIdRequest.Scan(&commandId)
 
-	var _, errorUpdateCommandStatusForCaptain = database.DB.Query("update users set commandid=? where id=?", commandId, id)
+	var UpdateCommandStatusForCaptain, errorUpdateCommandStatusForCaptain = database.DB.Query("update users set commandid=? where id=?", commandId, id)
+	defer UpdateCommandStatusForCaptain.Close()
+
 	if errorUpdateCommandStatusForCaptain != nil {
 		log.Println(errorUpdateCommandStatusForCaptain, "for", commandId, id)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -430,6 +459,8 @@ func RenameCommand(c echo.Context) error {
 	var commandForRename = c.FormValue("commandname")
 
 	var getCommandId, errorGetCaptainId = database.DB.Query("select (select id from command where captainid=?),(select count(*) from command where name=?)", id, commandForRename)
+	defer getCommandId.Close()
+
 	if errorGetCaptainId != nil {
 		log.Println(errorGetCaptainId, "for", commandForRename, id)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -447,7 +478,9 @@ func RenameCommand(c echo.Context) error {
 	}
 
 	if commandId != 0 {
-		database.DB.Query("update command set name=? where id=?", commandForRename, commandId)
+		var cc, _ = database.DB.Query("update command set name=? where id=?", commandForRename, commandId)
+		cc.Close()
+
 		return c.JSON(http.StatusOK, map[string]string{
 			"status": "success",
 		})
@@ -465,6 +498,8 @@ func DeleteCommand(c echo.Context) error {
 	var requestedCommandForDelete = c.FormValue("commandid")
 
 	var checkCaptainId, errorCheckCaptainId = database.DB.Query("select id, captainid from command where id=?", requestedCommandForDelete)
+	defer checkCaptainId.Close()
+
 	if errorCheckCaptainId != nil {
 		log.Println(errorCheckCaptainId)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -484,8 +519,11 @@ func DeleteCommand(c echo.Context) error {
 		})
 	}
 
-	database.DB.Query("update users set commandid=0 where commandid=?", commandId)
-	database.DB.Query("delete from command where id=?", commandId)
+	var cc, _ = database.DB.Query("update users set commandid=0 where commandid=?", commandId)
+	defer cc.Close()
+
+	var cc2, _ = database.DB.Query("delete from command where id=?", commandId)
+	defer cc2.Close()
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",
@@ -500,6 +538,8 @@ func DropUserFromCommand(c echo.Context) error {
 	var requestedUserForDelete = c.FormValue("userid")
 
 	var checkCaptainId, errorCheckCaptainId = database.DB.Query("select id, count(*) from command where captainid=?", id)
+	defer checkCaptainId.Close()
+
 	if errorCheckCaptainId != nil {
 		log.Println(errorCheckCaptainId)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -520,6 +560,8 @@ func DropUserFromCommand(c echo.Context) error {
 	}
 
 	var checkCurrentCommand, errorCheckCurrentCommand = database.DB.Query("select commandid from users where id=?", requestedUserForDelete)
+	defer checkCurrentCommand.Close()
+
 	if errorCheckCurrentCommand != nil {
 		log.Println(errorCheckCurrentCommand)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -537,7 +579,8 @@ func DropUserFromCommand(c echo.Context) error {
 		})
 	}
 
-	database.DB.Query("update users set commandid=0 where id=?", requestedUserForDelete)
+	var cc, _ = database.DB.Query("update users set commandid=0 where id=?", requestedUserForDelete)
+	defer cc.Close()
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",
@@ -551,6 +594,8 @@ func JoinCommandViaInvite(c echo.Context) error {
 
 	var inviteCode = c.FormValue("invite")
 	var getCommandCreds, errorGetCommandCreds = database.DB.Query("select id, count(*) from command where invite=?", inviteCode)
+	defer getCommandCreds.Close()
+
 	if errorGetCommandCreds != nil {
 		log.Println(errorGetCommandCreds)
 		return c.JSON(http.StatusOK, map[string]string{
@@ -569,7 +614,9 @@ func JoinCommandViaInvite(c echo.Context) error {
 		})
 	}
 
-	database.DB.Query("UPDATE users SET commandid=? WHERE id=?", commandId, id)
+	var cc, _ = database.DB.Query("UPDATE users SET commandid=? WHERE id=?", commandId, id)
+	defer cc.Close()
+
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",
 	})

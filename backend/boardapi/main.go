@@ -15,6 +15,7 @@ func BoardStats(c echo.Context) error {
 		"(select count(*) from ctfengine.tasks)," +
 		"(select count(*) from ctfengine.users)," +
 		"(select username from ctfengine.users order by points desc limit 1)")
+	defer request.Close()
 
 	if errorRequestBoardStat != nil {
 		log.Println(errorRequestBoardStat)
@@ -30,6 +31,8 @@ func BoardStats(c echo.Context) error {
 	var taskDataRequest, errorTaskDataRequest = database.DB.Query("SELECT category, count(category) " +
 		"from tasks " +
 		"group by category")
+
+	defer taskDataRequest.Close()
 
 	if errorTaskDataRequest != nil {
 		log.Println("ERROR!!!!", errorRequestBoardStat)

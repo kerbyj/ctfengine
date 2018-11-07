@@ -66,7 +66,8 @@ func CreateContest(c echo.Context) error {
 		contestPermit     = c.FormValue("permit")
 	)
 
-	var _, _ = database.DB.Query("insert into contests (name, type, visibility, permit) values (?,?,?,?)", contestName, contestType, contestVisibility, contestPermit)
+	var cc, _ = database.DB.Query("insert into contests (name, type, visibility, permit) values (?,?,?,?)", contestName, contestType, contestVisibility, contestPermit)
+	defer cc.Close()
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",
@@ -96,7 +97,8 @@ func CreateTask(c echo.Context) error {
 		taskContestId   = c.FormValue("task_contest")
 	)
 
-	var _, _ = database.DB.Query("insert into tasks (name, contestid, value, flag, description, category) values (?, ?, ?, ?, ?, ?)", taskName, taskContestId, taskPrice, taskFlag, taskDescription, taskCategory)
+	var cc, _ = database.DB.Query("insert into tasks (name, contestid, value, flag, description, category) values (?, ?, ?, ?, ?, ?)", taskName, taskContestId, taskPrice, taskFlag, taskDescription, taskCategory)
+	defer cc.Close()
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"status": "success",

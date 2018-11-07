@@ -21,6 +21,8 @@ type contestStruct struct {
 
 func GetContestList(c echo.Context) error {
 	var getAllContests, errGetAllContests = database.DB.Query("select id, name, type, (select count(*) from tasks where contestid=contests.id) as taskscount from contests where visibility=true")
+	defer getAllContests.Close()
+
 	if errGetAllContests != nil {
 		return c.String(http.StatusBadRequest, "shit happens")
 	}
@@ -61,10 +63,14 @@ func GetAlwaysAliveTasks(c echo.Context) error {
 
 	var userCommandId int
 	var getCommandId, _ = database.DB.Query("SELECT commandid FROM users WHERE id=?", userid)
+	defer getCommandId.Close()
+
 	getCommandId.Next()
 	getCommandId.Scan(&userCommandId)
 
 	var GetAllTasks, errGetAliveTasks = database.DB.Query("SELECT tasks.id, category, tasks.name, value, contests.name FROM tasks left join contests on tasks.contestid = contests.id where contests.visibility = true order by contestid")
+	defer GetAllTasks.Close()
+
 	if errGetAliveTasks != nil {
 		return c.String(http.StatusBadRequest, "shit happens")
 	}
@@ -79,6 +85,8 @@ func GetAlwaysAliveTasks(c echo.Context) error {
 	)
 
 	var getAlreadySolvedTasks, _ = database.DB.Query("SELECT taskid, time FROM pwnedby WHERE userid=? OR command_id=?", userid, userCommandId)
+	defer getAlreadySolvedTasks.Close()
+
 	for getAlreadySolvedTasks.Next() {
 		getAlreadySolvedTasks.Scan(&taskid, &time)
 		alreadySolvedByUser[taskid] = time
@@ -117,6 +125,7 @@ func GetAlwaysAliveTasks(c echo.Context) error {
 func GetTaskById(c echo.Context) error {
 	var requestedTask = c.Param("id")
 	var request, errGetTask = database.DB.Query("SELECT tasks.id, tasks.name, value, description, category, contests.name FROM tasks left join contests on tasks.contestid = contests.id WHERE tasks.id=?", requestedTask)
+	defer request.Close()
 
 	if errGetTask != nil {
 		return c.String(http.StatusBadRequest, "bad request")
@@ -143,6 +152,7 @@ func GetTaskById(c echo.Context) error {
 	request.Next()
 	request.Scan(&id, &name, &value, &description, &category, &contest)
 	var getAttachmentsForTask, errGetAttachmentsForTask = database.DB.Query("select id, name  from attachments where taskid=?", requestedTask)
+	defer getAttachmentsForTask.Close()
 
 	var(
 		allAttachments []Attachment
@@ -215,12 +225,15 @@ func CheckFlag(c echo.Context) error {
 	var username string
 
 	var getCommandId, _ = database.DB.Query("SELECT username, commandid FROM users WHERE id=?", userid)
+	defer getCommandId.Close()
+
 	getCommandId.Next()
 	getCommandId.Scan(&username, &userCommandId)
 
 
 
 	var getRightAnswer, errGetTaskAnswer = database.DB.Query("SELECT flag, value, contestid, type, tasks.name, contests.permit FROM tasks left join contests on tasks.contestid = contests.id where tasks.id=?", taskId)
+	defer getRightAnswer.Close()
 
 	if errGetTaskAnswer != nil {
 		log.Println(errGetTaskAnswer)
@@ -259,6 +272,8 @@ func CheckFlag(c echo.Context) error {
 
 	if contestType == "alone" {
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE userid=? AND taskid=?", userid, taskId)
+		defer checkPwned.Close()
+
 		if errCheckPwned != nil {
 			return c.JSON(http.StatusServiceUnavailable, errCheckPwned)
 		}
@@ -273,6 +288,8 @@ func CheckFlag(c echo.Context) error {
 
 	} else if contestType == "team" {
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE command_id=? AND taskid=?", userCommandId, taskId)
+		defer checkPwned.Close()
+
 		if errCheckPwned != nil {
 			return c.JSON(http.StatusServiceUnavailable, errCheckPwned)
 		}
@@ -286,11 +303,10 @@ func CheckFlag(c echo.Context) error {
 	}
 
 	if rightAnswer == flag {
-
 		if contestType == "alone" {
-
-
 			var checkExistInRatingTable, errCheckExist = database.DB.Query("SELECT COUNT(*) FROM rating WHERE contest_id = ? and userid = ? ", contestid, userid)
+			defer checkExistInRatingTable.Close()
+
 			if errCheckExist != nil {
 				log.Println(errCheckExist)
 			}
@@ -300,13 +316,17 @@ func CheckFlag(c echo.Context) error {
 			checkExistInRatingTable.Scan(&existStatus)
 
 			if existStatus == 0 {
-				database.DB.Query("INSERT INTO rating (contest_id, userid, points) values (?, ?, ?)", contestid, userid, points)
+				var cc, _ = database.DB.Query("INSERT INTO rating (contest_id, userid, points) values (?, ?, ?)", contestid, userid, points)
+				defer cc.Close()
 			} else {
-				database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND userid=?", points, contestid, userid)
+				var cc, _ = database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND userid=?", points, contestid, userid)
+				defer cc.Close()
 			}
-			database.DB.Query("UPDATE users SET `flagright`=`flagright`+1 WHERE id=?", userid)
+			var cc, _ = database.DB.Query("UPDATE users SET `flagright`=`flagright`+1 WHERE id=?", userid)
+			defer cc.Close()
 
-			database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid) VALUES(?,?,?)", userid, taskId, contestid) // Set task as accepted by this user
+			var cc2, _ = database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid) VALUES(?,?,?)", userid, taskId, contestid) // Set task as accepted by this user
+			defer cc2.Close()
 
 		} else if contestType == "team" {
 			var commandName string
@@ -317,6 +337,8 @@ func CheckFlag(c echo.Context) error {
 			log.Println(commandName, "sent the correct flag(", flag, ") for task", taskId, taskName, "in", time.Now())
 
 			var checkExistInRatingTable, errCheckExist = database.DB.Query("SELECT COUNT(*) FROM rating WHERE contest_id = ? and team = ? ", contestid, userCommandId)
+			defer checkExistInRatingTable.Close()
+
 			if errCheckExist != nil {
 				log.Println(errCheckExist)
 			}
@@ -325,20 +347,24 @@ func CheckFlag(c echo.Context) error {
 			checkExistInRatingTable.Scan(&existStatus)
 
 			if existStatus == 0 {
-				database.DB.Query("INSERT INTO rating (contest_id, team, points) values (?, ?, ?)", contestid, userCommandId, points)
+				var cc, _ = database.DB.Query("INSERT INTO rating (contest_id, team, points) values (?, ?, ?)", contestid, userCommandId, points)
+				defer cc.Close()
+
 			} else {
-				database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND team=?", points, contestid, userCommandId)
+				var cc, _ = database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND team=?", points, contestid, userCommandId)
+				defer cc.Close()
 			}
 
-			database.DB.Query("INSERT INTO pwnedby (userid, taskid, command_id, contestid) VALUES(?,?,?,?)", userid, taskId, userCommandId, contestid) // Set task as accepted by this user
-			
+			var cc, _ = database.DB.Query("INSERT INTO pwnedby (userid, taskid, command_id, contestid) VALUES(?,?,?,?)", userid, taskId, userCommandId, contestid) // Set task as accepted by this user
+			defer cc.Close()
 		}
 
 		return c.JSON(http.StatusOK, map[string]bool{
 			"result": true,
 		})
 	} else {
-		database.DB.Query("UPDATE users SET `flagfalse`=`flagfalse`+1 WHERE id=?", userid) // Increment for bruteforcer factor
+		var cc, _ = database.DB.Query("UPDATE users SET `flagfalse`=`flagfalse`+1 WHERE id=?", userid) // Increment for bruteforcer factor
+		cc.Close()
 
 		return c.JSON(http.StatusOK, map[string]bool{
 			"result": false,
