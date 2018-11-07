@@ -6,13 +6,14 @@ function drawTask() {
             console.log(data);
             document.getElementById("taskName").innerText = `${data.name}`;
             document.getElementById("taskName").taskid = data.id;
-            document.getElementById("taskDescriptionText").innerText = data.description;
+            document.getElementById("taskDescriptionText").innerHTML = data.description;
             document.getElementById("taskCategory").innerHTML = `<span class="statElementKey">Category</span><span class="statElementValue">${data.category}</span>`;
             document.getElementById("taskContest").innerHTML = `<span class="statElementKey">Contest</span><span class="statElementValue">${data.contest}</span>`;
             document.getElementById("taskValue").innerHTML = `<span class="statElementKey">Value</span><span class="statElementValue">${data.value}</span>`;
 
             let attachmentsContainer = document.getElementById("attachments");
-            if(data.attachments.length !== 0){
+            attachmentsContainer.innerHTML = "";
+            if(data.attachments !== null){
                 data.attachments.forEach(function (attachment) {
                    let attachElement = document.createElement("span");
                    attachElement.classList.add("attachment");
@@ -126,8 +127,11 @@ function checkFlag(){
         data: {flag: flagValue, taskid: taskid},
         success: function(data) {
             console.log(data);
-            if(data.result === true)
+            document.getElementById("statusTask").innerText = `Status: ${data.result}`;
+
+            if(data.result === true) {
                 document.getElementById(taskid).classList.add("solved");
+            }
         }
     });
 }
