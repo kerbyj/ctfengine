@@ -22,6 +22,7 @@ var (
 )
 
 func customHTTPErrorHandler(err error, c echo.Context) {
+	/*
 	code := http.StatusInternalServerError
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
@@ -29,9 +30,8 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 
 	if code == 400 {
 		c.HTML(http.StatusOK, "<script>location.replace('/login')</script>")
-	} else {
-		c.HTML(http.StatusOK, "<script>location.replace('/')</script>")
 	}
+*/
 }
 
 func main() {

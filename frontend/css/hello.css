@@ -2,3 +2,22 @@ body {
     background-color: #282828;
     color: white;
 }
+
+
+.title {
+  color: #888;  
+}
+
+
+.link {
+	font-size: 1.5em;
+}
+
+a:link{
+    text-decoration: none;
+    color:#888!important;
+}
+
+a:visited{
+    color:#888!important;
+}

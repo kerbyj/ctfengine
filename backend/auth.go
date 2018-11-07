@@ -56,15 +56,23 @@ func login(c echo.Context) error {
 		// Generate encoded token and send it as response.
 		t, err := token.SignedString(secretJWTkey)
 		if err != nil {
-			return err
+			return c.JSON(http.StatusOK, map[string]string{
+				"status": "error",
+				"error":  "error inside core",
+			})
 		}
 
 		c.SetCookie(common.CreateCookie("token", t, true, "/", time.Now().Add(12*time.Hour)))
 
-		return c.JSON(http.StatusOK, "ok")
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "success",
+		})
 	}
 
-	return echo.ErrUnauthorized
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "error",
+		"error":  "invalid credentials",
+	})
 }
 
 func register(c echo.Context) error {

@@ -1,11 +1,20 @@
 var scoreboardContainer = document.getElementById("scoreboardTable");
 
+let latestRequest = 0;
+setInterval(function () {
+    if(latestRequest === 0)
+        return;
+
+    getTopForAllTime(latestRequest);
+}, 10000);
+
 function getTopForAllTime(contestId) {
     $.post({
         type: 'get',
         url: GLOBAL_ENDPOINT+'/api/users/getTopForContest/'+contestId,
         success: function(data) {
             console.log(data);
+            latestRequest = contestId;
             let scoreboard = document.getElementById("scoreboard");
             //scoreboard.innerHTML = "";
             scoreboard.innerHTML = `<div class="oneRow">
