@@ -218,6 +218,8 @@ func CheckFlag(c echo.Context) error {
 	getCommandId.Next()
 	getCommandId.Scan(&username, &userCommandId)
 
+
+
 	var getRightAnswer, errGetTaskAnswer = database.DB.Query("SELECT flag, value, contestid, type, tasks.name, contests.permit FROM tasks left join contests on tasks.contestid = contests.id where tasks.id=?", taskId)
 
 	if errGetTaskAnswer != nil {
@@ -263,6 +265,13 @@ func CheckFlag(c echo.Context) error {
 		database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid) VALUES(?,?,?)", userid, taskId, contestid) // Set task as accepted by this user
 
 	} else if contestType == "team" {
+		if userCommandId == 0 {
+			return c.JSON(http.StatusOK, map[string]string{
+				"result": "you need to create command or join to existing",
+			})
+		}
+
+
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE command_id=? AND taskid=?", userCommandId, taskId)
 		if errCheckPwned != nil {
 			return c.JSON(http.StatusServiceUnavailable, errCheckPwned)
