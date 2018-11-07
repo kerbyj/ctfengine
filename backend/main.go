@@ -59,12 +59,12 @@ func main() {
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 
-	/*
-		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
-			AllowMethods: []string{echo.GET, echo.POST},
-		}))
-	*/
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
+		AllowMethods: []string{echo.GET, echo.POST},
+	}))
+
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
 	e.POST("/api/auth/register", register) // Register user & Create JWT
@@ -148,5 +148,5 @@ func main() {
 	api.GET("/board/getstats", boardapi.BoardStats)
 
 	e.Logger.Fatal(e.StartTLS(":1324", "cert.pem", "key.pem"))
-	//e.Logger.Fatal(e.Start(":1324"))
+	//e.Logger.Fatal(e.Start(":80"))
 }

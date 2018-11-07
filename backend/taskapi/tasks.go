@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"runtime"
-	"strconv"
 	"time"
 )
 
@@ -126,24 +125,60 @@ func GetTaskById(c echo.Context) error {
 	var value, id int
 	var name, description, category, contest string
 
+	type Attachment struct {
+		Id int `json:"id"`
+		Name string `json:"name"`
+	}
+
+	type TaskInFoOut struct {
+		Id int `json:"id"`
+		Name string `json:"name"`
+		Value int `json:"value"`
+		Description string `json:"description"`
+		Category string `json:"category"`
+		Contest string `json:"contest"`
+		Attachments []Attachment `json:"attachments"`
+	}
+
 	request.Next()
 	request.Scan(&id, &name, &value, &description, &category, &contest)
+	var getAttachmentsForTask, errGetAttachmentsForTask = database.DB.Query("select id, name  from attachments where taskid=?", requestedTask)
 
-	var dataOut = map[string]string{
-		"id":          strconv.Itoa(id),
-		"name":        name,
-		"value":       strconv.Itoa(value),
-		"description": description,
-		"category":    category,
-		"contest":     contest,
+	var(
+		allAttachments []Attachment
+		attachmentId int
+		attachmentName string
+	)
+
+	if errGetAttachmentsForTask != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+
+	for getAttachmentsForTask.Next(){
+		getAttachmentsForTask.Scan(&attachmentId, &attachmentName)
+		allAttachments = append(allAttachments, Attachment{
+			attachmentId,
+			attachmentName,
+		})
+	}
+
+	var dataOut = TaskInFoOut{
+		id,
+		name,
+		value,
+		description,
+		category,
+		contest,
+		allAttachments,
 	}
 
 	return c.JSON(http.StatusOK, dataOut)
 }
 
+/*
 func GetFileById(c echo.Context) error {
 	var requestedTask = c.Param("id")
-	var request, errGetTask = database.DB.Query("select ", requestedTask)
+	var request, errGetTask = database.DB.Query("select name from attachments", requestedTask)
 
 	if errGetTask != nil {
 		return c.String(http.StatusBadRequest, "bad request")
@@ -166,6 +201,7 @@ func GetFileById(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, dataOut)
 }
+*/
 
 func CheckFlag(c echo.Context) error {
 	var flag = c.FormValue("flag")

@@ -10,6 +10,17 @@ function drawTask() {
             document.getElementById("taskCategory").innerHTML = `<span class="statElementKey">Category</span><span class="statElementValue">${data.category}</span>`;
             document.getElementById("taskContest").innerHTML = `<span class="statElementKey">Contest</span><span class="statElementValue">${data.contest}</span>`;
             document.getElementById("taskValue").innerHTML = `<span class="statElementKey">Value</span><span class="statElementValue">${data.value}</span>`;
+
+            let attachmentsContainer = document.getElementById("attachments");
+            if(data.attachments.length !== 0){
+                data.attachments.forEach(function (attachment) {
+                   let attachElement = document.createElement("span");
+                   attachElement.classList.add("attachment");
+                   attachElement.innerHTML = `<span class="attachment"><i class="material-icons md-14">cloud_upload</i> <a target="_blank" href="${GLOBAL_ENDPOINT}/files/${attachment.name}">${attachment.name}</a></span><br>`
+
+                    attachmentsContainer.appendChild(attachElement)
+                });
+            }
         }
     });
 }

@@ -6,7 +6,7 @@ setInterval(function () {
         return;
 
     getTopForAllTime(latestRequest);
-}, 10000);
+}, 30000);
 
 function getTopForAllTime(contestId) {
     $.post({
@@ -28,7 +28,7 @@ function getTopForAllTime(contestId) {
                 let topParticipantContainer = document.createElement("div");
                 topParticipantContainer.classList.add("oneRow");
 
-                topParticipantContainer.innerHTML = `<div class="oneCell rank">${item.place}</div><div class="oneCell username">${item.name}</div><div class="oneCell score">${item.points}</div><div class="oneCell solvedTasks">${item.solved}/${item.all_tasks_count}</div>`;
+                topParticipantContainer.innerHTML = `<div class="oneCell rank">${item.place}</div><div class="oneCell username"><pre>${item.name}</pre></div><div class="oneCell score">${item.points}</div><div class="oneCell solvedTasks">${item.solved}/${item.all_tasks_count}</div>`;
                 scoreboard.appendChild(topParticipantContainer);
             })
         }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
+	"html"
 	"log"
 	"net/http"
 	"strconv"
@@ -185,7 +186,7 @@ func GetTopForContest(c echo.Context) error {
 		counterPlace++
 
 		dataOut = append(dataOut, topForContest{
-			Name:          username,
+			Name:          html.EscapeString(username),
 			Points:        points,
 			Solved:        solved,
 			AllTasksCount: taskcount,
