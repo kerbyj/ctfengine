@@ -250,6 +250,13 @@ func CheckFlag(c echo.Context) error {
 
 	//log.Println(contestType)
 
+	if userCommandId == 0 && contestType == "team" {
+		log.Println("you need to create command")
+		return c.JSON(http.StatusOK, map[string]string{
+			"result": "you need to create command",
+		})
+	}
+
 	if contestType == "alone" {
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE userid=? AND taskid=?", userid, taskId)
 		if errCheckPwned != nil {
@@ -262,16 +269,9 @@ func CheckFlag(c echo.Context) error {
 				"result": "already",
 			})
 		}
-		database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid) VALUES(?,?,?)", userid, taskId, contestid) // Set task as accepted by this user
+
 
 	} else if contestType == "team" {
-		if userCommandId == 0 {
-			return c.JSON(http.StatusOK, map[string]string{
-				"result": "you need to create command or join to existing",
-			})
-		}
-
-
 		checkPwned, errCheckPwned = database.DB.Query("SELECT COUNT(*) FROM pwnedby WHERE command_id=? AND taskid=?", userCommandId, taskId)
 		if errCheckPwned != nil {
 			return c.JSON(http.StatusServiceUnavailable, errCheckPwned)
@@ -283,15 +283,13 @@ func CheckFlag(c echo.Context) error {
 				"result": "already",
 			})
 		}
-
-		database.DB.Query("INSERT INTO pwnedby (userid, taskid, command_id, contestid) VALUES(?,?,?,?)", userid, taskId, userCommandId, contestid) // Set task as accepted by this user
 	}
 
 	if rightAnswer == flag {
 
 		if contestType == "alone" {
 
-			log.Println(username, "sent the correct flag(", flag, ") for task", taskId, taskName, "in", time.Now())
+
 			var checkExistInRatingTable, errCheckExist = database.DB.Query("SELECT COUNT(*) FROM rating WHERE contest_id = ? and userid = ? ", contestid, userid)
 			if errCheckExist != nil {
 				log.Println(errCheckExist)
@@ -307,6 +305,8 @@ func CheckFlag(c echo.Context) error {
 				database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND userid=?", points, contestid, userid)
 			}
 			database.DB.Query("UPDATE users SET `flagright`=`flagright`+1 WHERE id=?", userid)
+
+			database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid) VALUES(?,?,?)", userid, taskId, contestid) // Set task as accepted by this user
 
 		} else if contestType == "team" {
 			var commandName string
@@ -329,6 +329,9 @@ func CheckFlag(c echo.Context) error {
 			} else {
 				database.DB.Query("UPDATE rating SET points = points + ? WHERE contest_id=? AND team=?", points, contestid, userCommandId)
 			}
+
+			database.DB.Query("INSERT INTO pwnedby (userid, taskid, command_id, contestid) VALUES(?,?,?,?)", userid, taskId, userCommandId, contestid) // Set task as accepted by this user
+			
 		}
 
 		return c.JSON(http.StatusOK, map[string]bool{
