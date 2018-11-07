@@ -1,1 +1,1 @@
-var GLOBAL_ENDPOINT = "http://localhost";
+var GLOBAL_ENDPOINT = "https://localhost:1324";

@@ -54,8 +54,8 @@ func UserInfo(c echo.Context) error {
 	}
 
 	var dataOut = map[string]string{
-		"name":               username,
-		"command":            commandName,
+		"name":               html.EscapeString(username),
+		"command":            html.EscapeString(commandName),
 		"Points":             strconv.Itoa(points),
 		"Bruteforcer factor": fmt.Sprintf("%.2f%%", bffactor),
 		//"Overall place": strconv.Itoa(rank),

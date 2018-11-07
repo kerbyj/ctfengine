@@ -3,6 +3,7 @@ package boardapi
 import (
 	"ctfEngine/backend/database"
 	"github.com/labstack/echo"
+	"html"
 	"log"
 	"net/http"
 	"strconv"
@@ -26,7 +27,6 @@ func BoardStats(c echo.Context) error {
 	request.Next()
 	request.Scan(&tasksCount, &userCount, &topUserName)
 
-
 	var taskDataRequest, errorTaskDataRequest = database.DB.Query("SELECT category, count(category) " +
 		"from tasks " +
 		"group by category")
@@ -36,14 +36,13 @@ func BoardStats(c echo.Context) error {
 	}
 	defer taskDataRequest.Close()
 
-
 	var dataOut = map[string]map[string]string{
 		"tasksStats": {
-			"tasks_count":          strconv.Itoa(tasksCount),
+			"tasks_count": strconv.Itoa(tasksCount),
 		},
-		"boardStats":{
-			"user_count":       strconv.Itoa(userCount),
-			"TOP 1 pwner":        topUserName,
+		"boardStats": {
+			"user_count":  strconv.Itoa(userCount),
+			"TOP 1 pwner": html.EscapeString(topUserName),
 		},
 	}
 

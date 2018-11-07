@@ -5,7 +5,7 @@ function getinfo() {
         success: function(data) {
             console.log(data);
 
-            document.getElementById("name").innerText = data.name;
+            document.getElementById("name").innerHTML = `<span>${data.name}</span>`;
             delete data.name;
             document.getElementById("commandstatus").innerText = data.command;
             delete data.command;
