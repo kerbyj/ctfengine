@@ -150,4 +150,18 @@ func main() {
 	} else {
 		log.Println("Attachments DB created")
 	}
+
+	_, errCreateIdorTaskTable := db.Query(`CREATE TABLE articles(
+    							id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+   								userid int,
+    							article varchar(2000),
+    							time date NOT NULL DEFAULT NOW()
+							);
+		  				`)
+
+	if errCreateIdorTaskTable != nil {
+		log.Println(errCreateIdorTaskTable)
+	} else {
+		log.Println("IdorTask DB created")
+	}
 }
