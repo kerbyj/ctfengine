@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	secretJWTkey = []byte("lolkekauthjwt")
+	secretJWTkey = []byte("lolkekauth")
 )
 
 const (
