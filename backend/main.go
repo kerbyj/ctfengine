@@ -147,6 +147,6 @@ func main() {
 
 	api.GET("/board/getstats", boardapi.BoardStats)
 
-	e.Logger.Fatal(e.StartTLS(":1324", "cert.pem", "key.pem"))
+	e.Logger.Fatal(e.StartTLS(":443", "cert.pem", "key.pem"))
 	//e.Logger.Fatal(e.Start(":80"))
 }

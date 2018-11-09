@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
+	"github.com/thanhpk/randstr"
 	"html"
 	"log"
 	"net/http"
@@ -416,7 +417,9 @@ func CreateCommand(c echo.Context) error {
 		})
 	}
 
-	var CreateCommand, errorCreateCommand = database.DB.Query("INSERT into command (name, captainid) VALUES (?, ?)", commandName, id)
+	var inviteCode = randstr.Hex(16)
+
+	var CreateCommand, errorCreateCommand = database.DB.Query("INSERT into command (name, captainid, invite) VALUES (?, ?, ?)", commandName, id, inviteCode)
 	defer CreateCommand.Close()
 
 	if errorCreateCommand != nil {

@@ -12,7 +12,7 @@ func main() {
 		db, err := sql.Open("sqlite3", executionPath+"/backend/database/db2.sqlite")
 		checkErr(err)
 	*/
-	db, err := sql.Open("mysql", "root:root@/ctfengine")
+	db, err := sql.Open("mysql", "root:lolkek@/ctfengine")
 
 	if err != nil {
 		log.Panic(err)
@@ -47,7 +47,7 @@ func main() {
 						command_id INT UNSIGNED NULL,
 						taskid INT UNSIGNED NULL,
 						contestid INT UNSIGNED NULL,
-						time DATE DEFAULT NOW() NOT NULL
+						time VARCHAR(64) NOT NULL
 					)
 					ENGINE=InnoDB
 					DEFAULT CHARSET=utf8
@@ -81,12 +81,11 @@ func main() {
 	}
 
 	_, errCreateCommand := db.Query(`CREATE TABLE ctfengine.command (
-						id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+						id INT UNSIGNED NOT NULL AUTO_INCREMENT primary key,
 						name varchar(100) NULL,
 						captainid INT UNSIGNED NULL,
-						invite varchar(100) DEFAULT md5(RAND()) NOT NULL,
-						CONSTRAINT command_pk PRIMARY KEY (id)
-					)
+						invite varchar(1024) NOT NULL
+                    )
 					ENGINE=InnoDB
 					DEFAULT CHARSET=utf8
 					COLLATE=utf8_general_ci;
@@ -155,7 +154,7 @@ func main() {
     							id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
    								userid int,
     							article varchar(2000),
-    							time date NOT NULL DEFAULT NOW()
+    							time VARCHAR(64) NOT NULL
 							);
 		  				`)
 
