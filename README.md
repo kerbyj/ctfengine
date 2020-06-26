@@ -9,11 +9,11 @@ Very simple CTF board that was written long time ago for university contest
 
 ## Features
 
-- [x] There is no normal admin panel. You can create contests but no tasks.
-- [x] There may be vulnerabilities. There may be vulnerabilities. Most likely there are no vulnerabilities, but I'm not sure.
-- [x] You can hold several competitions at the same time.
-- [x] You do not need to register one username per team. Register as usual and ask the captain for an invite to the team.
-- [x] Everything is written in normal language (except javascript).
+1. There is no normal admin panel. You can create contests but no tasks.
+2. There may be vulnerabilities. There may be vulnerabilities. Most likely there are no vulnerabilities, but I'm not sure.
+3. You can hold several competitions at the same time.
+4. You do not need to register one username per team. Register as usual and ask the captain for an invite to the team.
+5. Everything is written in normal language (except javascript).
 
 ## ToDo
 
