@@ -17,9 +17,15 @@ Very simple CTF board that was written long time ago for university contest
 
 ## ToDo
 
-- [ ] Countdown for CTF. 
+- [ ] Countdown for contest. 
 - [ ] Overall team and user standings for all competitions
+- [ ] Setup instructions.
+- [ ] Docker
 
 ## Demo
 
 [https://ctf.kerby.network](https://ctf.kerby.network)
+
+## References
+
+Design - [Iulia Lukina](https://github.com/iulialkn)
