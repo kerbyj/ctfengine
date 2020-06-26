@@ -21,7 +21,7 @@ func LoadDB(executionPath string) {
 		db, err := sql.Open("sqlite3", executionPath+"/backend/database/db2.sqlite")
 		checkErr(err)
 	*/
-	db, err := sql.Open("mysql", "ctf:1234@/ctfengine")
+	db, err := sql.Open("mysql", "ctf:1234@tcp(db:3306)/ctfengine")
 	log.Println(err)
 
 	if err != nil {
