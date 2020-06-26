@@ -1,7 +1,7 @@
 package boardapi
 
 import (
-	"ctfEngine/backend/database"
+	"github.com/kerbyj/ctfengine/backend/database"
 	"github.com/labstack/echo"
 	"html"
 	"log"

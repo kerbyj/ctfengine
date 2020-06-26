@@ -1,8 +1,8 @@
 package taskapi
 
 import (
-	"ctfEngine/backend/common"
-	"ctfEngine/backend/database"
+	"github.com/kerbyj/ctfengine/backend/common"
+	"github.com/kerbyj/ctfengine/backend/database"
 	"database/sql"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
@@ -325,7 +325,7 @@ func CheckFlag(c echo.Context) error {
 			var cc, _ = database.DB.Query("UPDATE users SET `flagright`=`flagright`+1 WHERE id=?", userid)
 			defer cc.Close()
 
-			var cc2, _ = database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid) VALUES(?,?,?)", userid, taskId, contestid) // Set task as accepted by this user
+			var cc2, _ = database.DB.Query("INSERT INTO pwnedby (userid, taskid, contestid, time) VALUES(?,?,?,?)", userid, taskId, contestid,time.Now()) // Set task as accepted by this user
 			defer cc2.Close()
 
 		} else if contestType == "team" {
@@ -355,7 +355,7 @@ func CheckFlag(c echo.Context) error {
 				defer cc.Close()
 			}
 
-			var cc, _ = database.DB.Query("INSERT INTO pwnedby (userid, taskid, command_id, contestid) VALUES(?,?,?,?)", userid, taskId, userCommandId, contestid) // Set task as accepted by this user
+			var cc, _ = database.DB.Query("INSERT INTO pwnedby (userid, taskid, command_id, contestid, time) VALUES(?,?,?,?,?)", userid, taskId, userCommandId, contestid, time.Now()) // Set task as accepted by this user
 			defer cc.Close()
 		}
 

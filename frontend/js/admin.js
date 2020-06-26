@@ -46,6 +46,7 @@ function createContest() {
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/admin/createContest',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {
             contest_name: contestName,
             contest_type: contestType,
@@ -74,6 +75,7 @@ function createTask() {
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/admin/createTask',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {
             task_name: taskName,
             task_flag: taskFlag,

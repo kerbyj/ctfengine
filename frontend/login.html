@@ -52,12 +52,15 @@
         let username = document.getElementById("usernameLogin").value;
         let password = document.getElementById("passwordLogin").value;
 
+        //let CurrentCsrfToken = getCookie("_csrf");
+
         $.post({
             type: 'post',
             url: GLOBAL_ENDPOINT + '/api/auth/login',
             contentType: "application/x-www-form-urlencoded; charset=utf-8",
             dataType: "json",
             data: {username: username, password: password},
+            headers: { 'X-CSRF-Token': CurrentCsrfToken },
             success: function (data) {
                 console.log(data);
                 //localStorage.setItem("jwtToken", data.token);
@@ -83,6 +86,7 @@
             contentType: "application/x-www-form-urlencoded; charset=utf-8",
             dataType: "json",
             data: {username: username, password: password, email: email},
+            headers: { 'X-CSRF-Token': CurrentCsrfToken },
             success: function (data) {
                 //localStorage.setItem("jwtToken", data.token);
                 console.log("Created user");

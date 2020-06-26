@@ -12,7 +12,7 @@ func main() {
 		db, err := sql.Open("sqlite3", executionPath+"/backend/database/db2.sqlite")
 		checkErr(err)
 	*/
-	db, err := sql.Open("mysql", "root:lolkek@/ctfengine")
+	db, err := sql.Open("mysql", "ctf:1234@/ctfengine")
 
 	if err != nil {
 		log.Panic(err)

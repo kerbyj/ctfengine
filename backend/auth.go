@@ -2,10 +2,10 @@ package main
 
 import (
 	"crypto/md5"
-	"ctfEngine/backend/common"
-	"ctfEngine/backend/database"
 	"encoding/hex"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kerbyj/ctfengine/backend/common"
+	"github.com/kerbyj/ctfengine/backend/database"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	secretJWTkey = []byte("lolkekauthjwt")
+	secretJWTkey = []byte("lolkekauth")
 )
 
 const (

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"ctfEngine/backend/boardapi"
-	"ctfEngine/backend/common"
-	"ctfEngine/backend/database"
-	"ctfEngine/backend/taskapi"
-	"ctfEngine/backend/userapi"
-	"ctfengine/backend/admin"
+	"github.com/kerbyj/ctfengine/backend/admin"
+	"github.com/kerbyj/ctfengine/backend/boardapi"
+	"github.com/kerbyj/ctfengine/backend/common"
+	"github.com/kerbyj/ctfengine/backend/database"
+	"github.com/kerbyj/ctfengine/backend/taskapi"
+	"github.com/kerbyj/ctfengine/backend/userapi"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"net/http"
@@ -23,15 +23,15 @@ var (
 
 func customHTTPErrorHandler(err error, c echo.Context) {
 	/*
-	code := http.StatusInternalServerError
-	if he, ok := err.(*echo.HTTPError); ok {
-		code = he.Code
-	}
+		code := http.StatusInternalServerError
+		if he, ok := err.(*echo.HTTPError); ok {
+			code = he.Code
+		}
 
-	if code == 400 {
-		c.HTML(http.StatusOK, "<script>location.replace('/login')</script>")
-	}
-*/
+		if code == 400 {
+			c.HTML(http.StatusOK, "<script>location.replace('/login')</script>")
+		}
+	*/
 }
 
 func main() {
@@ -49,7 +49,7 @@ func main() {
 	e.Static("/js", executionPath+"/frontend/js")
 
 	var files = e.Group("/files/")
-	fs := http.FileServer(http.Dir(executionPath+"/files/"))
+	fs := http.FileServer(http.Dir(executionPath + "/files/"))
 	files.GET("*", echo.WrapHandler(http.StripPrefix("/files", fs)))
 
 	// Middleware
@@ -59,12 +59,18 @@ func main() {
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 
-
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"}, // TODO Debug mode! Change on real domain
 		AllowMethods: []string{echo.GET, echo.POST},
 	}))
 
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLength:  32,
+		TokenLookup:  "header:" + echo.HeaderXCSRFToken,
+		ContextKey:   "csrf",
+		CookieName:   "_csrf",
+		CookieMaxAge: 86400,
+	}))
 
 	e.POST("/api/auth/login", login)       // Login user & Create JWT
 	e.POST("/api/auth/register", register) // Register user & Create JWT
@@ -131,7 +137,7 @@ func main() {
 	api.POST("/users/ChangeUsername", userapi.ChangeUsername)
 
 	api.GET("/users/getCommandStatusForSettings", userapi.GetCommandInfoForSettings)
-	api.GET("/users/LeaveCommand", userapi.LeaveCommand)
+	api.POST("/users/LeaveCommand", userapi.LeaveCommand)
 	api.POST("/users/CreateCommand", userapi.CreateCommand)
 	api.POST("/users/RenameCommand", userapi.RenameCommand)
 	api.POST("/users/DeleteCommand", userapi.DeleteCommand)
@@ -147,6 +153,6 @@ func main() {
 
 	api.GET("/board/getstats", boardapi.BoardStats)
 
-	e.Logger.Fatal(e.StartTLS(":443", "cert.pem", "key.pem"))
-	//e.Logger.Fatal(e.Start(":80"))
+	//e.Logger.Fatal(e.StartTLS(":443", "cert.pem", "key.pem"))
+	e.Logger.Fatal(e.Start(":1080"))
 }

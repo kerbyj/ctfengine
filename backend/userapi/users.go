@@ -2,11 +2,11 @@ package userapi
 
 import (
 	"crypto/md5"
-	"ctfEngine/backend/common"
-	"ctfEngine/backend/database"
 	"encoding/hex"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kerbyj/ctfengine/backend/common"
+	"github.com/kerbyj/ctfengine/backend/database"
 	"github.com/labstack/echo"
 	"github.com/thanhpk/randstr"
 	"html"
@@ -98,7 +98,6 @@ type TopUserOut struct {
 func TopUserForAlltime(c echo.Context) error {
 	var request, errorGetTop = database.DB.Query("SELECT users.id, username, points, command.name FROM users left join command on users.commandid = command.id ORDER BY points DESC LIMIT 50")
 	defer request.Close()
-
 
 	if errorGetTop != nil {
 		log.Print(errorGetTop)

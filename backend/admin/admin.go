@@ -1,10 +1,10 @@
 package admin
 
 import (
-	"ctfEngine/backend/common"
-	"ctfEngine/backend/database"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kerbyj/ctfengine/backend/common"
+	"github.com/kerbyj/ctfengine/backend/database"
 	"github.com/labstack/echo"
 	"net/http"
 )

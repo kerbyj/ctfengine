@@ -11,6 +11,7 @@ function changePassword() {
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/ChangePassword',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {oldPassword: oldPassword, newPassword:newPassword1},
         success: function (data) {
             console.log(data);
@@ -29,6 +30,7 @@ function changeUsername() {
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/ChangeUsername',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {newName: newName},
         success: function (data) {
             console.log(data);
@@ -42,8 +44,9 @@ function changeUsername() {
 
 function LeaveCommand() {
     $.post({
-        type: 'get',
+        type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/LeaveCommand',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         success: function (data) {
             console.log(data);
             if (data.status === "success")
@@ -60,6 +63,7 @@ function CreateCommand() {
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/CreateCommand',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {commandname: commandName},
         success: function (data) {
             console.log(data);
@@ -78,6 +82,7 @@ function RenameCommand() {
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/RenameCommand',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {commandname: commandName},
         success: function (data) {
             console.log(data);
@@ -96,6 +101,7 @@ function DeleteCommand() {
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/DeleteCommand',
         data: {commandid: this.command_id},
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         success: function (data) {
             console.log(data);
             if (data.status === "success")
@@ -159,6 +165,7 @@ function JoinCommand(){
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT + '/api/users/JoinCommandViaInvite',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {invite: invite},
         success: function (data) {
             console.log(data);

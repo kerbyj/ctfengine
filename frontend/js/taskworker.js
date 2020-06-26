@@ -103,7 +103,7 @@ var span = document.getElementsByClassName("close")[0];
 function showModal() {
     modal.style.display = "block";
     //document.getElementById("tasksContainer").style.visibility = "hidden";
-};
+}
 
 span.onclick = function() {
     modal.style.display = "none";
@@ -124,6 +124,7 @@ function checkFlag(){
     $.post({
         type: 'post',
         url: GLOBAL_ENDPOINT+'/api/tasks/checkFlag',
+        headers: { 'X-CSRF-Token': CurrentCsrfToken },
         data: {flag: flagValue, taskid: taskid},
         success: function(data) {
             console.log(data);
