@@ -20,5 +20,6 @@ Very simple CTF board that was written long time ago for university contest
 - [ ] Countdown for CTF. 
 - [ ] Overall team and user standings for all competitions
 
-## Screens
+## Demo
 
+[https://ctf.kerby.network](https://ctf.kerby.network)
